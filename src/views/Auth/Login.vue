@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { signInWithPopup } from 'firebase/auth' // Importamos signInWithPopup
 import usersService, { type LoginBody, type LoginResponse } from '@/services/users.service'
 import { useUserStore } from '@/stores/user'
-import { auth, provider } from '@/firebase' // Importamos nuestra configuración
 
 const router = useRouter()
 const route = useRoute()
@@ -15,7 +13,6 @@ const email = ref(String(route.query.email || ''))
 const password = ref('')
 const showPassword = ref(false)
 const loading = ref(false)
-const loadingGoogle = ref(false) // Nuevo estado para Google
 const error = ref('')
 const info = ref(String(route.query.msg || ''))
 
@@ -27,78 +24,16 @@ function togglePassword() {
   showPassword.value = !showPassword.value
 }
 
-// Lógica de Login con Google
-async function loginWithGoogle() {
-  loadingGoogle.value = true
-  error.value = ''
-
-  try {
-    // 1. Abrir Popup de Google
-    const result = await signInWithPopup(auth, provider)
-    const user = result.user
-
-    // 2. Obtener Token (Este token se enviará al Backend luego)
-    const token = await user.getIdToken()
-
-    console.log('🚀 Google User:', user)
-    console.log('🔐 Firebase ID Token:', token)
-
-    // 3. Enviar token al Backend para validar y crear sesión
-    const { data } = await usersService.googleLogin<LoginResponse>(token)
-
-    // 4. Guardar sesión y redirigir (Igual que en login normal)
-    localStorage.setItem('access_token', data.token)
-
-    try {
-      // Manejo flexible de IDs según vengan del backend (_id, id, user_id)
-      const uid = (data.user as any)?.id || (data.user as any)?._id || (data.user as any)?.user_id
-
-      if (uid) {
-        localStorage.setItem('user_id', String(uid))
-
-        // 5. RE-FETCH: Obtener perfil completo y fresco para asegurar accountType (Founder, etc.)
-        try {
-          const { data: userData } = await usersService.getById(uid)
-          const freshUser = userData.user
-
-          localStorage.setItem('user', JSON.stringify(freshUser))
-          userStore.setUser({
-            id: freshUser._id || (freshUser as any).id,
-            name: freshUser.name,
-            email: freshUser.email,
-            accountType: freshUser.accountType || (freshUser as any).account_type
-          })
-        } catch (fetchErr) {
-          console.warn('Error refrescando perfil post-login:', fetchErr)
-          // Fallback al usuario que vino en login
-          userStore.setUser({
-            id: uid,
-            name: (data.user as any)?.name,
-            email: (data.user as any)?.email
-          })
-        }
-      }
-    } catch (err) {
-      console.warn('Error parseando usuario:', err)
+// Lógica de Login con Google (Demo)
+function loginWithGoogle() {
+  window.dispatchEvent(new CustomEvent('app:confirm', {
+    detail: {
+      title: 'Modo Demostración',
+      message: 'Este botón es solo de prueba para la demo. Por favor, comuníquese con el administrador para que le proporcione las credenciales de acceso.',
+      confirmText: 'Entendido',
+      cancelText: 'Cerrar'
     }
-
-    router.push('/')
-
-  } catch (e: any) {
-    console.error('Error Google Login:', e)
-    if (e.code === 'auth/popup-closed-by-user') {
-      // El usuario cerró el popup, no mostramos error rojo
-      return
-    }
-    // Si el error viene del backend (axios)
-    if (e.message && !e.code) {
-      error.value = e.message
-    } else {
-      error.value = 'No se pudo iniciar sesión con Google. Inténtalo de nuevo.'
-    }
-  } finally {
-    loadingGoogle.value = false
-  }
+  }))
 }
 
 async function submit() {
@@ -217,7 +152,7 @@ function showDemoNotice() {
             </div>
           </div>
 
-          <button class="submit-btn" type="submit" :disabled="loading || loadingGoogle">
+          <button class="submit-btn" type="submit" :disabled="loading">
             <span v-if="!loading">Iniciar Sesión <i class="fa-solid fa-arrow-right-to-bracket" /></span>
             <span v-else><i class="fa-solid fa-spinner fa-spin" /> Verificando...</span>
           </button>
@@ -227,9 +162,8 @@ function showDemoNotice() {
           <span>O continúa con</span>
         </div>
 
-        <button type="button" class="google-btn" @click="loginWithGoogle" :disabled="loading || loadingGoogle">
-          <i v-if="loadingGoogle" class="fa-solid fa-spinner fa-spin" />
-          <i v-else class="fa-brands fa-google icon" />
+        <button type="button" class="google-btn" @click="loginWithGoogle" :disabled="loading">
+          <i class="fa-brands fa-google icon" />
           <span>Google</span>
         </button>
       </div>
