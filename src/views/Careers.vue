@@ -3,7 +3,6 @@ import { onMounted, computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCareersStore } from '@/stores/careers'
 import { useUserStore } from '@/stores/user'
-import { useCoursesStore } from '@/stores/courses'
 import { makeCareerPlaceholders } from '@/mocks/careers.mock'
 import CareerCard from '@/components/CareerCard.vue'
 
