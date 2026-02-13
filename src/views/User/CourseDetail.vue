@@ -131,19 +131,8 @@ const showLanding = computed(() => {
 
 <template>
   <div class="course-detail">
-    <div v-if="store.loading && (!store.currentCourse || String(store.currentCourse?.id) !== String(id))" class="loading-state">
-       <div class="spinner"><i class="fa-solid fa-spinner fa-spin" /></div>
-    </div>
-
-    <!-- 404 Not Found (Course itself) -->
-    <div v-else-if="(!store.currentCourse && !store.loading) || (store.error && !store.currentCourse)" class="error-state">
-       <div class="empty">
-        <i class="fa-regular fa-face-meh" /> No se encontró el curso.
-      </div>
-    </div>
-
     <!-- LANDING PAGE (Public/Guest or Not Enrolled) -->
-    <div v-else-if="showLanding && store.currentCourse" class="landing-layout">
+    <div v-if="showLanding && store.currentCourse && !store.loading" class="landing-layout">
        <PublicHeader />
        <CourseLanding 
          :course="store.currentCourse" 
@@ -151,14 +140,13 @@ const showLanding = computed(() => {
        />
     </div>
 
-    <!-- STUDENT DASHBOARD (Enrolled) -->
     <!-- STUDENT DASHBOARD (Enrolled) + LAYOUT RECONSTRUCTION -->
     <div v-else class="wrapper">
       <div class="header-layout">
         <UserHeader @toggle-sidebar="openCloseMenu" />
       </div>
       
-      <!-- Mobile Sidebar Overlay (Copied from UserLayout) -->
+      <!-- Mobile Sidebar Overlay -->
       <button class="floating-menu-btn" type="button" @click="openCloseMenu">
         <i class="fa-solid fa-bars"></i>
       </button>
@@ -176,8 +164,38 @@ const showLanding = computed(() => {
           <UserSidebar :menuIsOpen="menuIsOpen" />
         </div>
         <div class="layout-view-wrapper">
-           <!-- ACTUAL COURSE DETAIL CONTENT -->
-           <div class="container course-content-container">
+          
+          <!-- Loading State Inside Layout -->
+          <div v-if="store.loading && (!store.currentCourse || String(store.currentCourse?.id) !== String(id))" class="skeleton-container container">
+            <div class="skeleton-header">
+              <div class="skeleton-pill"></div>
+              <div class="skeleton-title"></div>
+            </div>
+            <div class="skeleton-content">
+              <div class="skeleton-left">
+                <div class="skeleton-media"></div>
+                <div class="skeleton-text"></div>
+                <div class="skeleton-text short"></div>
+                <div class="skeleton-actions">
+                  <div class="skeleton-btn"></div>
+                  <div class="skeleton-btn"></div>
+                </div>
+              </div>
+              <div class="skeleton-right">
+                <div class="skeleton-item" v-for="i in 4" :key="i"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 404 Not Found -->
+          <div v-else-if="(!store.currentCourse && !store.loading) || (store.error && !store.currentCourse)" class="error-state">
+             <div class="empty">
+              <i class="fa-regular fa-face-meh" /> No se encontró el curso.
+            </div>
+          </div>
+
+          <!-- ACTUAL COURSE DETAIL CONTENT -->
+          <div v-else-if="store.currentCourse" class="container course-content-container">
               <div class="progress">
                 <div class="progress-bar" :style="{ width: progressPercent + '%' }"></div>
                 <div class="progress-meta">Progreso: {{ progressPercent }}% · {{ progressText }}</div>
@@ -219,12 +237,12 @@ const showLanding = computed(() => {
                     <PlaylistSidebar :sections="store.currentCourse.lecture_sections" :course-id="String(id)" :completed-lecture-ids="store.progress.completedLectureIds" />
                   </div>
                 </div>
-           </div>
-           <!-- END CONTENT -->
+          </div>
         </div>
       </div>
     </div>
   </div>
+
 </template>
 
 <style lang="scss" scoped>
@@ -341,7 +359,116 @@ const showLanding = computed(() => {
 
 // --- CONTENT STYLES ---
 
+.skeleton-container {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding: 32px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.skeleton-header {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.skeleton-pill {
+  width: 120px;
+  height: 24px;
+  background: color-mix(in srgb, var(--text) 10%, transparent);
+  border-radius: 999px;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+.skeleton-title {
+  width: 60%;
+  height: 40px;
+  background: color-mix(in srgb, var(--text) 10%, transparent);
+  border-radius: 12px;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+.skeleton-content {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+
+  @media (min-width: 1024px) {
+    grid-template-columns: 1.8fr 1fr;
+  }
+}
+
+.skeleton-left {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.skeleton-media {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: color-mix(in srgb, var(--text) 10%, transparent);
+  border-radius: 16px;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+.skeleton-text {
+  width: 100%;
+  height: 20px;
+  background: color-mix(in srgb, var(--text) 5%, transparent);
+  border-radius: 4px;
+  animation: pulse 1.5s infinite ease-in-out;
+
+  &.short {
+    width: 40%;
+  }
+}
+
+.skeleton-actions {
+  display: flex;
+  gap: 16px;
+}
+
+.skeleton-btn {
+  width: 160px;
+  height: 48px;
+  background: color-mix(in srgb, var(--text) 10%, transparent);
+  border-radius: 999px;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+.skeleton-right {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.skeleton-item {
+  width: 100%;
+  height: 60px;
+  background: color-mix(in srgb, var(--text) 5%, transparent);
+  border-radius: 12px;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+
+  50% {
+    opacity: 0.3;
+  }
+
+  100% {
+    opacity: 0.6;
+  }
+}
+
 .course-detail {
+
   width: 100%;
   // padding removed here as it is handled by layout/wrapper now
   background: var(--bg);
