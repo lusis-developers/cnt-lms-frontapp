@@ -110,7 +110,7 @@ function goToNext(scope: 'global' | 'section' = 'global') {
     })()
 }
 
-function goBack() { router.back() }
+function goBack() { router.push('/courses/all') }
 
 
 const checkingQuiz = ref(false)

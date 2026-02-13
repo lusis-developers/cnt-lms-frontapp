@@ -109,7 +109,7 @@ function openLecture(lectureId: number | string) {
   router.push(`/courses/${id.value}/lectures/${lectureId}`)
 }
 
-function goBack() { router.back() }
+function goBack() { router.push('/courses') }
 
 async function startQuiz() {
   if (!id.value) return
