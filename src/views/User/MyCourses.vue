@@ -118,13 +118,14 @@ onMounted(() => {
             @blocked-click="openModal(c)"
           />
         </div>
-        <h3 class="subtitle">Próximamente</h3>
+        <h3 class="subtitle upcoming-title">Próximamente</h3>
         <div class="cards">
           <CourseCard
             v-for="(c, i) in upcoming"
             :key="c.id"
             :course="c"
             :disabled="true"
+            :blocked="true"
             :countdown-to="countdownForIndex(i)"
             :show-published-badge="true"
             :show-classes-count="true"
@@ -193,6 +194,11 @@ onMounted(() => {
 .subtitle {
   color: color-mix(in oklab, var(--text), transparent 40%);
   margin: 0;
+
+  &.upcoming-title {
+    margin-top: 48px;
+    margin-bottom: 12px;
+  }
 }
 
 .upcoming-notice {
