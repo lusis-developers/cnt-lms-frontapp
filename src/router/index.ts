@@ -26,10 +26,10 @@ import CareerDetail from "../views/CareerDetail.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: '/hub',
+    path: '/',
     component: UserLayout,
     meta: {
-      title: 'Plataforma de Capacitación | CNT',
+      title: 'Fudmaster | lleva tu cocina al siguiente nivel',
       requiresAuth: true
     },
     children: [
@@ -39,61 +39,73 @@ const routes: Array<RouteRecordRaw> = [
       },
       {
         path: 'dashboard',
+        name: 'Dashboard',
         component: UserDashboard,
         meta: { title: 'Dashboard', requiresAuth: true }
       },
       {
         path: 'courses',
+        name: 'MyCourses',
         component: MyCourses,
         meta: { title: 'Mis cursos', requiresAuth: true }
       },
       {
         path: 'courses/all',
+        name: 'AllCourses',
         component: AllCourses,
         meta: { title: 'Todos los cursos', requiresAuth: true }
       },
       {
         path: 'courses/:id/lectures/:lectureId',
+        name: 'LectureDetail',
         component: LectureDetail,
         meta: { title: 'Clase', requiresAuth: true }
       },
       {
         path: 'courses/:id/quiz',
+        name: 'QuizView',
         component: QuizView,
         meta: { title: 'Quiz', requiresAuth: true }
       },
       {
         path: 'courses/:id/quiz/result',
+        name: 'QuizResult',
         component: QuizResult,
         meta: { title: 'Resultado del quiz', requiresAuth: true }
       },
       {
         path: 'courses/:id/quizzes/:quizId',
+        name: 'QuizViewAlternative',
         component: QuizView,
         meta: { title: 'Quiz', requiresAuth: true }
       },
       {
         path: 'courses/:id/quizzes/:quizId/result',
+        name: 'QuizResultAlternative',
         component: QuizResult,
         meta: { title: 'Resultado del quiz', requiresAuth: true }
       },
       {
         path: 'careers',
+        name: 'Careers',
         component: Careers,
         meta: { title: 'Escuelas o Carreras', requiresAuth: true }
       },
       {
         path: 'careers/:id',
+        name: 'CareerDetail',
         component: CareerDetail,
         meta: { title: 'Detalle de carrera', requiresAuth: true }
       },
       {
         path: 'profile/edit',
+        name: 'ProfileEdit',
         component: ProfileEdit,
         meta: { title: 'Editar perfil', requiresAuth: true }
       },
       {
         path: 'certificates',
+        name: 'Certificates',
         component: CertificatesView,
         meta: { title: 'Mis Certificados', requiresAuth: true }
       }
@@ -111,10 +123,10 @@ const routes: Array<RouteRecordRaw> = [
     }
   },
   {
-    path: '/',
+    path: '/landing-page',
     component: NicoleLanding,
     meta: {
-      title: 'Plataforma de Capacitación | Demo CNT'
+      title: 'Cambia tu vida gastronómica con Nicole y su equipo'
     }
   },
   {
@@ -189,15 +201,11 @@ router.beforeEach((to, _from, next) => {
   const requiresAuth = to.matched.some((record) => record.meta?.requiresAuth)
 
   if (requiresAuth && !hasToken) {
-    return next({ path: '/', replace: true })
+    return next({ path: '/landing-page', replace: true })
   }
 
   if (to.path === '/login' && hasToken) {
-    return next({ path: '/hub', replace: true })
-  }
-
-  if (to.path === '/' && hasToken) {
-    return next({ path: '/hub', replace: true })
+    return next({ path: '/', replace: true })
   }
 
   next()

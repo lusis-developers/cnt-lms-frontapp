@@ -9,46 +9,43 @@ const userStore = useUserStore();
 
 // Form State
 const jobPosition = ref("");
-const businessName = ref("");
+const businessName = ref(""); // Se mantiene como Nombre de la Gerencia/Área
 const businessType = ref<string | null>(null);
 const businessTypeOther = ref("");
 const employeeCount = ref<string | null>(null);
-const numberOfLocations = ref<number | null>(null);
+const numberOfLocations = ref<number | null>(null); // Se mantiene para Sedes/Sucursales
 const heardAboutUs = ref<string | null>(null);
 const heardAboutUsOther = ref("");
 
 const loading = ref(false);
 const errorMsg = ref<string | null>(null);
 
-// Options
+// Options - Refactorizadas para contexto corporativo de CNT
 const businessTypeOptions = [
-  { value: "physical_restaurant", label: "Restaurante Físico" },
-  { value: "dark_kitchen", label: "Dark Kitchen" },
-  { value: "food_truck", label: "Food Truck" },
-  { value: "catering", label: "Catering" },
-  { value: "bakery", label: "Panadería / Repostería" },
-  { value: "cafe", label: "Cafetería" },
-  { value: "other", label: "Otro" },
+  { value: "it_technology", label: "Tecnología / Sistemas" },
+  { value: "human_resources", label: "Recursos Humanos" },
+  { value: "commercial_sales", label: "Comercial / Ventas" },
+  { value: "operations_logistics", label: "Operaciones / Logística" },
+  { value: "customer_service", label: "Atención al Cliente" },
+  { value: "administration_finance", label: "Administración / Finanzas" },
+  { value: "other", label: "Otro Departamento" },
 ];
 
 const employeeCountOptions = [
-  "1-5",
-  "6-10",
-  "11-25",
-  "26-50",
-  "50+",
+  "1-10",
+  "11-50",
+  "51-200",
+  "201-500",
+  "500+",
 ];
 
 const heardAboutUsOptions = [
-  { value: "social_media_ad", label: "Anuncio en Redes Sociales" },
-  { value: "friend_colleague", label: "Amigo o Colega" },
-  { value: "search_engine", label: "Buscador (Google, Bing)" },
-  { value: "online_article_blog", label: "Artículo o Blog Online" },
-  { value: "youtube_video", label: "Video de YouTube" },
-  { value: "podcast", label: "Podcast" },
-  { value: "event_webinar", label: "Evento o Webinar" },
-  { value: "email_campaign", label: "Email / Newsletter" },
-  { value: "teachable_marketplace", label: "Teachable Marketplace" },
+  { value: "internal_communication", label: "Comunicación Interna CNT" },
+  { value: "manager_referral", label: "Referencia de Jefe / Gerente" },
+  { value: "intranet", label: "Intranet Corporativa" },
+  { value: "corporate_email", label: "Correo Corporativo" },
+  { value: "social_media", label: "Redes Sociales" },
+  { value: "event_webinar", label: "Evento o Capacitación" },
   { value: "other", label: "Otro" },
 ];
 
@@ -58,7 +55,6 @@ const isFormValid = computed(() => {
   if (!businessType.value) return false;
   if (businessType.value === 'other' && !businessTypeOther.value.trim()) return false;
   if (!employeeCount.value) return false;
-  // numberOfLocations is optional but let's assume if entered checks are done by input type.
   if (!heardAboutUs.value) return false;
   if (heardAboutUs.value === 'other' && !heardAboutUsOther.value.trim()) return false;
   return true;
@@ -88,21 +84,15 @@ async function handleSubmit() {
 
     // Update store
     userStore.setUser({
-      onboardingCompleted: true, // Optimistic update or use returned user
+      onboardingCompleted: true,
     });
 
-    // Also explicitly verify returned user
-    if ((data.user as any).onboardingCompleted) {
-      // Redirection
-      router.push("/dashboard");
-    } else {
-      // Fallback
-      router.push("/dashboard");
-    }
+    // Redirección directa al Dashboard nombrado
+    router.push({ name: 'Dashboard' });
 
   } catch (err: any) {
     console.error("Onboarding error:", err);
-    errorMsg.value = err.response?.data?.message || "Ocurrió un error al guardar tu información regarding onboarding.";
+    errorMsg.value = err.response?.data?.message || "Ocurrió un error al guardar tu información de perfil.";
   } finally {
     loading.value = false;
   }
@@ -112,97 +102,123 @@ async function handleSubmit() {
 <template>
   <div class="onboarding-container">
     <div class="onboarding-card">
-      <h1>¡Bienvenido a Fudmaster!</h1>
-      <p class="subtitle">Para personalizar tu experiencia, necesitamos conocer un poco más sobre ti y tu negocio.</p>
+      <div class="brand-header">
+        <img src="@/assets/logo/logo.png" alt="CNT" class="logo" />
+      </div>
+      
+      <h1>¡Bienvenido a la Plataforma de Capacitación!</h1>
+      <p class="subtitle">Para personalizar tu experiencia de aprendizaje, necesitamos conocer un poco más sobre tu rol en la organización.</p>
 
       <div v-if="errorMsg" class="error-banner">
-        {{ errorMsg }}
+        <i class="fa-solid fa-circle-exclamation" /> {{ errorMsg }}
       </div>
 
       <form @submit.prevent="handleSubmit" class="onboarding-form">
         
         <div class="form-group">
           <label>Cargo / Puesto de Trabajo <span class="required">*</span></label>
-          <input 
-            v-model="jobPosition"
-            type="text" 
-            placeholder="Ej. Dueño, Chef Ejecutivo, Gerente..." 
-            required
-          />
+          <div class="input-wrapper">
+            <i class="fa-solid fa-briefcase icon" />
+            <input 
+              v-model="jobPosition"
+              type="text" 
+              placeholder="Ej. Analista de Sistemas, Supervisor de Ventas..." 
+              required
+            />
+          </div>
         </div>
 
         <div class="form-group">
-          <label>Nombre del Negocio (Opcional)</label>
-          <input 
-            v-model="businessName"
-            type="text" 
-            placeholder="Nombre de tu establecimiento" 
-          />
+          <label>Gerencia / Área (Opcional)</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-sitemap icon" />
+            <input 
+              v-model="businessName"
+              type="text" 
+              placeholder="Nombre de tu área o departamento" 
+            />
+          </div>
         </div>
 
         <div class="form-group">
-          <label>Tipo de Negocio <span class="required">*</span></label>
-          <select v-model="businessType" required>
-            <option :value="null" disabled>Selecciona una opción</option>
-            <option v-for="opt in businessTypeOptions" :key="opt.value" :value="opt.value">
-              {{ opt.label }}
-            </option>
-          </select>
+          <label>Departamento Principal <span class="required">*</span></label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-building icon" />
+            <select v-model="businessType" required>
+              <option :value="null" disabled>Selecciona tu área</option>
+              <option v-for="opt in businessTypeOptions" :key="opt.value" :value="opt.value">
+                {{ opt.label }}
+              </option>
+            </select>
+          </div>
         </div>
 
         <div v-if="businessType === 'other'" class="form-group sub-group">
-          <label>Especifica el tipo de negocio <span class="required">*</span></label>
-          <input 
-            v-model="businessTypeOther"
-            type="text" 
-            placeholder="Describe tu negocio" 
-            required
-          />
+          <label>Especifica el área <span class="required">*</span></label>
+          <div class="input-wrapper">
+            <input 
+              v-model="businessTypeOther"
+              type="text" 
+              placeholder="Describe tu departamento" 
+              required
+            />
+          </div>
         </div>
 
         <div class="form-group">
-          <label>Cantidad de Empleados <span class="required">*</span></label>
-          <select v-model="employeeCount" required>
-            <option :value="null" disabled>Selecciona un rango</option>
-            <option v-for="opt in employeeCountOptions" :key="opt" :value="opt">
-              {{ opt }}
-            </option>
-          </select>
+          <label>Personal a cargo o en el equipo <span class="required">*</span></label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-users icon" />
+            <select v-model="employeeCount" required>
+              <option :value="null" disabled>Selecciona un rango</option>
+              <option v-for="opt in employeeCountOptions" :key="opt" :value="opt">
+                {{ opt }}
+              </option>
+            </select>
+          </div>
         </div>
 
         <div class="form-group">
-          <label>Número de Sucursales</label>
-          <input 
-            v-model.number="numberOfLocations"
-            type="number" 
-            min="0"
-            placeholder="0" 
-          />
+          <label>Número de Sedes / Oficinas</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-location-dot icon" />
+            <input 
+              v-model.number="numberOfLocations"
+              type="number" 
+              min="0"
+              placeholder="Ej. 1" 
+            />
+          </div>
         </div>
 
         <div class="form-group">
-          <label>¿Cómo te enteraste de nosotros? <span class="required">*</span></label>
-          <select v-model="heardAboutUs" required>
-            <option :value="null" disabled>Selecciona una opción</option>
-            <option v-for="opt in heardAboutUsOptions" :key="opt.value" :value="opt.value">
-              {{ opt.label }}
-            </option>
-          </select>
+          <label>¿Cómo conociste la plataforma? <span class="required">*</span></label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-magnifying-glass icon" />
+            <select v-model="heardAboutUs" required>
+              <option :value="null" disabled>Selecciona una opción</option>
+              <option v-for="opt in heardAboutUsOptions" :key="opt.value" :value="opt.value">
+                {{ opt.label }}
+              </option>
+            </select>
+          </div>
         </div>
 
         <div v-if="heardAboutUs === 'other'" class="form-group sub-group">
           <label>Especifica <span class="required">*</span></label>
-          <input 
-            v-model="heardAboutUsOther"
-            type="text" 
-            placeholder="Cuéntanos cómo nos conociste" 
-            required
-          />
+          <div class="input-wrapper">
+            <input 
+              v-model="heardAboutUsOther"
+              type="text" 
+              placeholder="Cuéntanos más" 
+              required
+            />
+          </div>
         </div>
 
         <button type="submit" class="submit-btn" :disabled="!isFormValid || loading">
-          <span v-if="loading">Guardando...</span>
-          <span v-else>Comenzar</span>
+          <span v-if="!loading">Comenzar mi Capacitación <i class="fa-solid fa-arrow-right" /></span>
+          <span v-else><i class="fa-solid fa-spinner fa-spin" /> Guardando...</span>
         </button>
 
       </form>
@@ -211,128 +227,174 @@ async function handleSubmit() {
 </template>
 
 <style lang="scss" scoped>
+$CNT-BLUE: #2094D2;
+$CNT-DARK: #010D27;
+$CNT-LIGHT: #f4f6f8;
+$white: #ffffff;
+
 .onboarding-container {
-  min-height: 100%;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #f4f6f8; // Light background
-  padding: 2rem;
+  background-color: $CNT-LIGHT;
+  padding: 40px 16px;
 }
 
 .onboarding-card {
-  background: white;
+  background: $white;
   width: 100%;
-  max-width: 600px;
-  padding: 2.5rem;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  max-width: 580px;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px -10px rgba($CNT-DARK, 0.1);
+  border: 1px solid rgba($CNT-DARK, 0.05);
+
+  .brand-header {
+    text-align: center;
+    margin-bottom: 24px;
+
+    .logo {
+      height: 48px;
+    }
+  }
 
   h1 {
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: #1a1a1a;
-    margin-bottom: 0.5rem;
+    font-size: 24px;
+    font-weight: 800;
+    color: $CNT-DARK;
+    margin-bottom: 12px;
     text-align: center;
   }
 
   .subtitle {
     text-align: center;
-    color: #666;
-    margin-bottom: 2rem;
-    font-size: 1rem;
+    color: rgba($CNT-DARK, 0.6);
+    margin-bottom: 32px;
+    font-size: 15px;
     line-height: 1.5;
   }
 }
 
 .error-banner {
-  background-color: #fee2e2;
-  color: #b91c1c;
-  padding: 0.75rem;
-  border-radius: 6px;
-  margin-bottom: 1.5rem;
-  font-size: 0.9rem;
-  text-align: center;
+  background: rgba(#ef4444, 0.1);
+  color: #ef4444;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(#ef4444, 0.2);
+  margin-bottom: 24px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .onboarding-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
+  display: grid;
+  gap: 20px;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 8px;
 
   label {
     font-weight: 600;
-    font-size: 0.9rem;
-    color: #374151;
+    font-size: 14px;
+    color: $CNT-DARK;
 
     .required {
       color: #ef4444;
-      margin-left: 2px;
     }
   }
 
-  input,
-  select {
-    padding: 0.75rem 1rem;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    font-size: 1rem;
+  .input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba($CNT-DARK, 0.03);
+    border: 1px solid rgba($CNT-DARK, 0.1);
+    border-radius: 12px;
+    padding: 12px 16px;
     transition: all 0.2s;
-    background-color: #fff;
 
-    &:focus {
-      outline: none;
-      border-color: #3b82f6; // Brand color or typical blue
-      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    &:focus-within {
+      background: $white;
+      border-color: $CNT-BLUE;
+      box-shadow: 0 0 0 4px rgba($CNT-BLUE, 0.1);
     }
 
-    &::placeholder {
-      color: #9ca3af;
+    .icon {
+      color: rgba($CNT-DARK, 0.4);
+      font-size: 18px;
+      width: 20px;
+      text-align: center;
+    }
+
+    input,
+    select {
+      flex: 1;
+      padding: 0;
+      border: none;
+      background: transparent;
+      outline: none;
+      font-size: 16px;
+      color: $CNT-DARK;
+      width: 100%;
+
+      &::placeholder {
+        color: rgba($CNT-DARK, 0.3);
+      }
+    }
+
+    select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23010D27' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0 center;
+      background-size: 16px;
+      padding-right: 24px;
     }
   }
 }
 
 .sub-group {
-  margin-top: -0.5rem;
-  padding-left: 1rem;
-  border-left: 3px solid #e5e7eb;
+  padding-left: 16px;
+  border-left: 2px solid rgba($CNT-DARK, 0.1);
 }
 
 .submit-btn {
-  margin-top: 1rem;
-  background-color: #111827; // Dark almost black
+  margin-top: 12px;
+  background-color: $CNT-DARK;
   color: white;
-  padding: 0.875rem;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 1.1rem;
+  padding: 16px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 16px;
   border: none;
   cursor: pointer;
-  transition: opacity 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.2s;
 
-  &:hover {
-    opacity: 0.9;
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px -5px rgba($CNT-DARK, 0.3);
   }
 
   &:disabled {
-    background-color: #9ca3af;
+    opacity: 0.7;
     cursor: not-allowed;
   }
 }
 
 @media (max-width: 640px) {
-  .onboarding-container {
-    padding: 1rem;
-  }
-
   .onboarding-card {
-    padding: 1.5rem;
+    padding: 24px;
   }
 }
 </style>

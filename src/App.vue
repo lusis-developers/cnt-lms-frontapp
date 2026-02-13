@@ -104,7 +104,7 @@ onMounted(() => {
 .global-modal {
   position: fixed;
   inset: 0;
-  background: rgba($FUDMASTER-DARK, 0.4);
+  background: rgba($CNT-DARK, 0.4);
   z-index: 2000;
   display: grid;
   place-items: center;
@@ -150,12 +150,12 @@ onMounted(() => {
 
 .btn.cancel {
   background: $CNT-LIGHT;
-  color: $FUDMASTER-DARK;
-  border: 1px solid rgba($FUDMASTER-DARK, 0.12);
+  color: $CNT-DARK;
+  border: 1px solid rgba($CNT-DARK, 0.12);
 }
 
 .btn.confirm {
-  background: $FUDMASTER-DARK;
+  background: $CNT-DARK;
   color: $white;
 }
 

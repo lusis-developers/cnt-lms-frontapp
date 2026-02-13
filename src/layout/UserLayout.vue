@@ -45,7 +45,7 @@ onMounted(() => {
         <Transition name="panel-slide">
           <div class="overlay-panel">
             <div class="overlay-head">
-              <img src="../assets/iso-verde.png" alt="logo" class="overlay-logo" />
+              <img src="../assets/logo/logo.png" alt="logo" class="overlay-logo" />
             </div>
             <UserSidebar :menuIsOpen="false" @navigate="openCloseMenu" />
           </div>
@@ -97,7 +97,7 @@ onMounted(() => {
     max-width: 280px;
     background: var(--bg);
     border-right: 1px solid var(--border);
-    box-shadow: 0 8px 24px rgba($FUDMASTER-DARK, 0.2);
+    box-shadow: 0 8px 24px rgba($CNT-DARK, 0.2);
     display: flex;
     flex-direction: column;
 

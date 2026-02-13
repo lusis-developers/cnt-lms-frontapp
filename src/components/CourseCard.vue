@@ -11,13 +11,16 @@ const props = defineProps({
   showClassesCount: { type: Boolean, required: false },
   ctaText: { type: String, required: false },
   disabled: { type: Boolean, required: false },
+  blocked: { type: Boolean, required: false },
   countdownTo: { type: Number, required: false },
 })
 
-const emit = defineEmits(['placeholder-click'])
+const emit = defineEmits(['placeholder-click', 'blocked-click'])
 
 function sanitizeUrl(url?: string) { return (url || '').toString().replace(/`/g, '').trim() }
-function coverOf(course: any) { return sanitizeUrl(course?.image_url) || sanitizeUrl(course?.coverUrl) || '/src/assets/fudmaster-color.png' }
+function coverOf(course: any) {
+  return sanitizeUrl(course?.image_url) || sanitizeUrl(course?.coverUrl) || '/src/assets/logo/logo.png'
+}
 function nameOf(course: any) { return course?.name || course?.title || 'Curso sin título' }
 function descriptionOf(course: any) { return course?.heading || course?.description || course?.shortDescription || 'Detalles próximamente.' }
 
@@ -33,9 +36,11 @@ function classesCount(course: any) {
 
 const linkTo = computed(() => props.to || `/courses/${(props.course as any)?.id}`)
 const published = computed(() => !!(props.course as any)?.is_published)
-const showPublished = computed(() => props.showPublishedBadge && published.value)
-const showClasses = computed(() => !!props.showClassesCount)
-const cta = computed(() => props.ctaText || 'Ver curso')
+const isActuallyBlocked = computed(() => props.blocked || props.disabled)
+
+const showPublished = computed(() => props.showPublishedBadge && published.value && !isActuallyBlocked.value)
+const showClasses = computed(() => !!props.showClassesCount && !isActuallyBlocked.value)
+const cta = computed(() => isActuallyBlocked.value ? 'Muy pronto' : (props.ctaText || 'Ver curso'))
 
 const showDesc = ref(false)
 const expanded = ref(false)
@@ -52,22 +57,33 @@ function toggleExpanded(e: Event) { e.preventDefault(); e.stopPropagation(); exp
 const { remaining } = useEvergreenTimer()
 
 function onCardClick(e: Event) {
-  if (!props.disabled) return
-  e.preventDefault()
-  e.stopPropagation()
-  emit('placeholder-click')
+  if (isActuallyBlocked.value) {
+    e.preventDefault()
+    e.stopPropagation()
+    if (props.blocked) {
+      emit('blocked-click')
+    } else {
+      emit('placeholder-click')
+    }
+  }
 }
 </script>
 
 <template>
-  <component :is="props.disabled ? 'div' : RouterLink" :to="props.disabled ? undefined : linkTo" class="course-card" :class="{ disabled: props.disabled }" @click="onCardClick">
-    <img class="cover" :class="{ blur: props.disabled }" :src="coverOf(course)" alt="cover" />
+  <component :is="isActuallyBlocked ? 'div' : RouterLink" :to="isActuallyBlocked ? undefined : linkTo" class="course-card" :class="{ disabled: isActuallyBlocked }" @click="onCardClick">
+    <div class="cover-wrapper">
+      <img class="cover" :class="{ blur: isActuallyBlocked }" :src="coverOf(course)" alt="cover" />
+      <div v-if="isActuallyBlocked" class="blocked-overlay">
+        <i class="fa-solid fa-lock" />
+      </div>
+    </div>
     <h3 class="name">{{ nameOf(course) }}</h3>
     <div class="meta">
       <span class="badge" v-if="showPublished">Publicado</span>
       <span class="badge" v-if="showClasses"><i class="fa-solid fa-clapperboard" /> {{ classesCount(course) }} clases</span>
-      <span class="cta">{{ cta }} <i class="fa-solid fa-arrow-right" /></span>
+      <span class="cta" :class="{ secondary: isActuallyBlocked }">{{ cta }} <i class="fa-solid fa-arrow-right" /></span>
     </div>
+
 
     <button class="desc-toggle" @click="toggleShowDesc">{{ showDesc ? 'Ocultar descripción' : 'Ver descripción' }}</button>
     <transition name="fade">
@@ -115,18 +131,39 @@ function onCardClick(e: Event) {
 }
 
 .course-card.disabled {
-  opacity: 0.85;
+  opacity: 1;
+  border-color: var(--border);
+  cursor: pointer;
+}
+
+.cover-wrapper {
+  position: relative;
+  width: 100%;
+  height: 160px;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 .cover {
   width: 100%;
-  height: 160px;
-  border-radius: 8px;
+  height: 100%;
   object-fit: cover;
 }
 
 .cover.blur {
-  filter: blur(6px);
+  filter: blur(12px) grayscale(0.5);
+  transform: scale(1.05); // Para evitar bordes blancos por blur
+}
+
+.blocked-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.1);
+  color: $white;
+  font-size: 24px;
 }
 
 .name {
@@ -165,7 +202,15 @@ function onCardClick(e: Event) {
   align-items: center;
   gap: 6px;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+
+  &.secondary {
+    background: color-mix(in oklab, var(--text), transparent 90%);
+    color: var(--text);
+    box-shadow: none;
+    border: 1px solid var(--border);
+  }
 }
+
 
 .desc-toggle {
   background: transparent;

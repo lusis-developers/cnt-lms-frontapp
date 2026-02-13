@@ -5,6 +5,9 @@ import dashboardService from '@/services/dashboard.service';
 import type { DashboardStats, RecentCourse } from '@/types/dashboard';
 import DashboardStatsDisplay from '@/components/User/Dashboard/DashboardStats.vue';
 import RecentCourses from '@/components/User/Dashboard/RecentCourses.vue';
+import { isGastronomic, isHidden } from '@/utils/courseUtils';
+
+
 
 const userStore = useUserStore();
 const isLoading = ref(true);
@@ -34,8 +37,10 @@ const fetchDashboardData = async () => {
     const { data } = await dashboardService.getDashboard(userStore.id);
 
     stats.value = data.stats;
-    recentCourses.value = data.recentCourses;
+    recentCourses.value = (data.recentCourses || []).filter(c => isGastronomic(c) && !isHidden(c));
   } catch (err: any) {
+
+
     console.error('Failed to load dashboard:', err);
     error.value = 'No pudimos cargar tu información. Por favor intenta más tarde.';
   } finally {

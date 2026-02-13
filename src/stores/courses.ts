@@ -68,7 +68,7 @@ export const useCoursesStore = defineStore('courses', {
     async goToNextLecture(courseId: string | number, router: any, scope: 'global' | 'section' = 'global', currentLectureId?: string | number) {
       console.log('[coursesStore] goToNextLecture', { courseId, scope, currentLectureId })
       if (!this.currentCourse) {
-        try { await this.fetchById(courseId) } catch {}
+        try { await this.fetchById(courseId) } catch { }
       }
       if (!this.currentLecture && currentLectureId !== undefined) {
         this.setCurrentLectureFromCourse(currentLectureId)
@@ -128,7 +128,20 @@ export const useCoursesStore = defineStore('courses', {
         this.loading = false
       }
     },
+    resetCurrentCourse() {
+      this.currentCourse = null
+      this.currentLecture = null
+      this.currentVideo = null
+      this.progress = {
+        percent: 0,
+        completed: 0,
+        total: 0,
+        completedLectureIds: [],
+      }
+      this.errorCode = null
+    },
     async fetchById(courseId: string | number) {
+      this.resetCurrentCourse()
       this.loading = true
       this.error = ''
       try {
@@ -239,15 +252,15 @@ export const useCoursesStore = defineStore('courses', {
         console.log('[coursesStore] fetchProgress error', e)
         const status = e?.response?.status
         const msg = e?.response?.data?.message || e?.message || ''
-        
+
         this.error = msg || 'Error al obtener progreso'
-        
+
         if (status === 404 || msg === 'Not Found' || msg.includes('404')) {
           this.errorCode = 404
         } else {
           this.errorCode = status || 500
         }
-        
+
         return null
       } finally {
         this.loading = false

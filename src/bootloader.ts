@@ -1,4 +1,4 @@
-import { createSSRApp } from "vue";
+import { createApp } from "vue";
 import { createPinia } from "pinia";
 import { createHead } from "@unhead/vue/client";
 
@@ -8,7 +8,7 @@ import router from './router'
 
 
 async function createVueApp() {
-  const app = createSSRApp(App)
+  const app = createApp(App)
   const pinia = createPinia()
   const head = createHead()
 

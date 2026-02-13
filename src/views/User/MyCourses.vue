@@ -5,6 +5,7 @@ import { useUserStore } from '@/stores/user'
 import UpgradeBanner from '@/components/UpgradeBanner.vue'
 import CourseCard from '@/components/CourseCard.vue'
 import { makePlaceholders } from '@/mocks/courses.mock'
+import { isComingSoon, isHidden } from '@/utils/courseUtils'
 
 const store = useCoursesStore()
 const userStore = useUserStore()
@@ -21,13 +22,16 @@ const userId = computed(() => {
 const query = ref('')
 const modalOpen = ref(false)
 const modalTitle = ref('')
+const modalDesc = ref('')
 
 const sourceCourses = computed(() => (store.enrolledCourses.length ? store.enrolledCourses : store.courses))
 
 const filtered = computed(() => {
   const q = query.value.trim().toLowerCase()
-  if (!q) return sourceCourses.value
-  return sourceCourses.value.filter((c: any) => {
+  let list = sourceCourses.value.filter((c: any) => !isHidden(c))
+
+  if (!q) return list
+  return list.filter((c: any) => {
     const text = [c?.name, c?.title, c?.heading, c?.description, c?.shortDescription].join(' ').toLowerCase()
     return text.includes(q)
   })
@@ -38,10 +42,16 @@ const upcoming = computed(() => makePlaceholders(6))
 
 
 function openModal(c: any) {
-  modalTitle.value = String(c?.name || 'Próximamente')
+  modalTitle.value = String(c?.name || c?.title || 'Curso Próximamente')
+  const isMock = String(c?.id || '').startsWith('mock-')
+  modalDesc.value = isMock
+    ? 'Esto es un entorno controlado para el demo. Este curso estará disponible muy pronto.'
+    : 'Este contenido estará disponible próximamente en tu cuenta. Estamos trabajando para brindarte la mejor experiencia.'
   modalOpen.value = true
 }
 function closeModal() { modalOpen.value = false }
+
+
 
 function cycleDeadline(weeks: number): number {
   const now = new Date()
@@ -104,6 +114,8 @@ onMounted(() => {
             :to="`/courses/${c.id}`"
             :show-published-badge="true"
             :show-classes-count="true"
+            :blocked="isComingSoon(c)"
+            @blocked-click="openModal(c)"
           />
         </div>
         <h3 class="subtitle">Próximamente</h3>
@@ -119,20 +131,41 @@ onMounted(() => {
             @placeholder-click="openModal(c)"
           />
         </div>
-        <div v-if="modalOpen" class="modal-overlay" @click.self="closeModal">
-          <div class="modal">
-            <h3 class="modal-title"><i class="fa-solid fa-hourglass-half" /> {{ modalTitle }}</h3>
-            <p class="modal-desc">Este curso estará disponible pronto. Gracias por tu interés.</p>
-            <button class="modal-btn" type="button" @click="closeModal">Entendido</button>
+
+        <!-- Nice and Minimalist Modal -->
+        <Transition name="fade">
+          <div v-if="modalOpen" class="modal-root" @click.self="closeModal">
+            <div class="modal-container">
+              <div class="modal-header">
+                <div class="icon-circle">
+                  <i class="fa-solid fa-hourglass-half" />
+                </div>
+                <button class="close-btn" @click="closeModal">
+                  <i class="fa-solid fa-xmark" />
+                </button>
+              </div>
+              <div class="modal-content">
+                <h3 class="modal-title">{{ modalTitle }}</h3>
+                <p class="modal-desc">{{ modalDesc }}</p>
+              </div>
+
+              <button class="modal-action" type="button" @click="closeModal">Entendido</button>
+            </div>
           </div>
-        </div>
+        </Transition>
       </div>
+
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.my-courses { width: 100%; padding: 24px 16px; background: var(--bg); color: var(--text); }
+.my-courses {
+  width: 100%;
+  padding: 24px 16px;
+  background: var(--bg);
+  color: var(--text);
+}
 
 .container {
   margin: 0 auto;
@@ -140,7 +173,13 @@ onMounted(() => {
   gap: 12px;
 }
 
-.header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .title {
   color: var(--text);
   padding: 24px 0;
@@ -167,9 +206,25 @@ onMounted(() => {
   gap: 8px;
 }
 
-.actions { display: flex; align-items: center; gap: 10px; }
-.search { background: color-mix(in oklab, var(--text), transparent 94%); border: 1px solid var(--border); color: var(--text); border-radius: 10px; padding: 10px 12px; font-size: 14px; width: 220px; }
-.search::placeholder { color: color-mix(in oklab, var(--text), transparent 50%); }
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.search {
+  background: color-mix(in oklab, var(--text), transparent 94%);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 14px;
+  width: 220px;
+}
+
+.search::placeholder {
+  color: color-mix(in oklab, var(--text), transparent 50%);
+}
 
 .loading,
 .error,
@@ -196,11 +251,52 @@ onMounted(() => {
   grid-template-columns: 1fr;
 }
 
-.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-.modal { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 16px; width: min(480px, 92vw); display: grid; gap: 12px; color: var(--text); box-shadow: 0 12px 40px rgba(0,0,0,0.25); }
-.modal-title { margin: 0; font-size: 18px; display: inline-flex; align-items: center; gap: 8px; color: var(--text); }
-.modal-desc { margin: 0; color: color-mix(in oklab, var(--text), transparent 40%); }
-.modal-btn { background: var(--accent); color: $white; border: none; border-radius: 999px; padding: 10px 14px; font-weight: 700; cursor: pointer; justify-self: end; }
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  width: min(480px, 92vw);
+  display: grid;
+  gap: 12px;
+  color: var(--text);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+}
+
+.modal-title {
+  margin: 0;
+  font-size: 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+}
+
+.modal-desc {
+  margin: 0;
+  color: color-mix(in oklab, var(--text), transparent 40%);
+}
+
+.modal-btn {
+  background: var(--accent);
+  color: $white;
+  border: none;
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-weight: 700;
+  cursor: pointer;
+  justify-self: end;
+}
 
 @media (min-width: 720px) {
   .cards {

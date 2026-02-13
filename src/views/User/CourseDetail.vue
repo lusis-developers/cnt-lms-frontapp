@@ -82,17 +82,24 @@ const ctaIcon = computed(() => {
   return 'fa-solid fa-play'
 })
 
-onMounted(async () => {
-  if (id.value) {
-    try {
-      await store.fetchById(id.value)
-      if (userId.value) {
-        await store.fetchProgress(id.value, userId.value)
-      }
-    } catch (e) {
-      console.error('Error loading course details', e)
+const loadCourseData = async (courseId: string) => {
+  if (!courseId) return
+  try {
+    await store.fetchById(courseId)
+    if (userId.value) {
+      await store.fetchProgress(courseId, userId.value)
     }
+  } catch (e) {
+    console.error('Error loading course details', e)
   }
+}
+
+watch(id, (newId) => {
+  if (newId) loadCourseData(newId)
+}, { immediate: true })
+
+onMounted(() => {
+  // handled by watch immediate
 })
 
 
@@ -124,7 +131,7 @@ const showLanding = computed(() => {
 
 <template>
   <div class="course-detail">
-    <div v-if="store.loading && !store.currentCourse" class="loading-state">
+    <div v-if="store.loading && (!store.currentCourse || String(store.currentCourse?.id) !== String(id))" class="loading-state">
        <div class="spinner"><i class="fa-solid fa-spinner fa-spin" /></div>
     </div>
 

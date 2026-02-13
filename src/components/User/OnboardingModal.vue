@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
-// import { useRouter } from "vue-router"; 
 import { useUserStore } from "@/stores/user";
 import usersService, { type OnboardingBody } from "@/services/users.service";
 import CustomSelect from "../CustomSelect.vue";
@@ -10,7 +9,7 @@ const userStore = useUserStore();
 // Form State
 const jobPosition = ref<string | null>(null);
 const businessName = ref("");
-const hasNoBusiness = ref(false); // Toggle state
+const hasNoBusiness = ref(false);
 const businessType = ref<string | null>(null);
 const businessTypeOther = ref("");
 const employeeCount = ref<string | null>(null);
@@ -21,64 +20,48 @@ const heardAboutUsOther = ref("");
 const loading = ref(false);
 const errorMsg = ref<string | null>(null);
 
-// Options
+// Options - Refactorizadas para contexto corporativo de CNT
 const jobPositionOptions = [
-  { value: "owner", label: "Dueño / Propietario" },
-  { value: "executive_chef", label: "Chef Ejecutivo" },
-  { value: "manager", label: "Gerente / Administrador" },
-  { value: "cook", label: "Cocinero / Chef de Partie" },
-  { value: "pastry_chef", label: "Pastelero / Repostero" },
-  { value: "student", label: "Estudiante de Gastronomía" },
-  { value: "foodie", label: "Aficionado / Foodie" },
+  { value: "analyst", label: "Analista / Especialista" },
+  { value: "supervisor", label: "Supervisor" },
+  { value: "manager", label: "Jefe / Gerente" },
+  { value: "director", label: "Director / Ejecutivo" },
   { value: "other", label: "Otro" },
 ];
 
 const businessTypeOptions = [
-  { value: "physical_restaurant", label: "Restaurante Físico" },
-  { value: "dark_kitchen", label: "Dark Kitchen" },
-  { value: "food_truck", label: "Food Truck" },
-  { value: "catering", label: "Catering" },
-  { value: "bakery", label: "Panadería / Repostería" },
-  { value: "cafe", label: "Cafetería" },
-  { value: "other", label: "Otro" },
+  { value: "it_technology", label: "Tecnología / Sistemas" },
+  { value: "human_resources", label: "Recursos Humanos" },
+  { value: "commercial_sales", label: "Comercial / Ventas" },
+  { value: "operations_logistics", label: "Operaciones / Logística" },
+  { value: "customer_service", label: "Atención al Cliente" },
+  { value: "administration_finance", label: "Administración / Finanzas" },
+  { value: "other", label: "Otro Departamento" },
 ];
 
 const employeeCountOptions = [
-  "1-5",
-  "6-10",
-  "11-25",
-  "26-50",
-  "50+",
+  "1-10",
+  "11-50",
+  "51-200",
+  "201-500",
+  "500+",
 ].map(val => ({ label: val, value: val }));
 
 const heardAboutUsOptions = [
-  { value: "social_media_ad", label: "Anuncio en Redes Sociales" },
-  { value: "friend_colleague", label: "Amigo o Colega" },
-  { value: "search_engine", label: "Buscador (Google, Bing)" },
-  { value: "online_article_blog", label: "Artículo o Blog Online" },
-  { value: "youtube_video", label: "Video de YouTube" },
-  { value: "podcast", label: "Podcast" },
-  { value: "event_webinar", label: "Evento o Webinar" },
-  { value: "email_campaign", label: "Email / Newsletter" },
-  { value: "teachable_marketplace", label: "Teachable Marketplace" },
+  { value: "internal_communication", label: "Comunicación Interna CNT" },
+  { value: "manager_referral", label: "Referencia de Jefe / Gerente" },
+  { value: "intranet", label: "Intranet Corporativa" },
+  { value: "corporate_email", label: "Correo Corporativo" },
+  { value: "social_media", label: "Redes Sociales" },
+  { value: "event_webinar", label: "Evento o Capacitación" },
   { value: "other", label: "Otro" },
 ];
 
 // Computed Validation
 const isFormValid = computed(() => {
   if (!jobPosition.value) return false;
-  // If has business, prioritize Business Type selection logic? 
-  // User asked for "Not yet" button for Business NAME. Logic implies if they don't have one, maybe Type doesn't apply?
-  // Usually if they don't have a name, they might still be planning a "Restaurant". 
-  // Let's assume Type is still required unless we want to change that. 
-  // The User Request focused on Name. Let's keep Type required for now as it helps segmentation ("I plan to open a restaurant").
-
   if (!businessType.value) return false;
   if (businessType.value === 'other' && !businessTypeOther.value.trim()) return false;
-
-  // If has business name or explicitly says "don't have one" (which is valid as name is optional in interface)
-  // Logic: Name is optional in current code, so validation only checked other fields.
-
   if (!employeeCount.value) return false;
   if (!heardAboutUs.value) return false;
   if (heardAboutUs.value === 'other' && !heardAboutUsOther.value.trim()) return false;
@@ -88,7 +71,7 @@ const isFormValid = computed(() => {
 function toggleNoBusiness() {
   hasNoBusiness.value = !hasNoBusiness.value;
   if (hasNoBusiness.value) {
-    businessName.value = "Aún no tengo negocio"; // Or keep empty and backend handles
+    businessName.value = "Gerencia/Área por definir";
   } else {
     businessName.value = "";
   }
@@ -105,7 +88,7 @@ async function handleSubmit() {
 
     const payload: OnboardingBody = {
       jobPosition: jobPosition.value as string,
-      businessName: hasNoBusiness.value ? "Aún no tengo negocio" : businessName.value,
+      businessName: hasNoBusiness.value ? "Gerencia/Área por definir" : businessName.value,
       businessType: businessType.value as string,
       businessTypeOther: businessType.value === 'other' ? businessTypeOther.value : undefined,
       employeeCount: employeeCount.value as string,
@@ -116,14 +99,11 @@ async function handleSubmit() {
 
     const { data } = await usersService.submitOnboarding(userStore.id, payload);
 
-    // Update store (this will cause the modal to unmount via v-if in parent)
     userStore.setUser({
       onboardingCompleted: true,
     });
 
-    // Explicitly update if backend returns useful data
     if ((data.user as any).onboardingCompleted) {
-      // Redundant but safe
       userStore.onboardingCompleted = true;
     }
 
@@ -140,12 +120,15 @@ async function handleSubmit() {
   <div class="modal-overlay">
     <div class="modal-content">
       <div class="header">
-        <h1>¡Bienvenido a Fudmaster!</h1>
-        <p class="subtitle">Complete su perfil para continuar.</p>
+        <div class="brand-logo">
+          <img src="@/assets/logo/logo.png" alt="CNT" class="logo" />
+        </div>
+        <h1>¡Bienvenido a la Plataforma de Capacitación!</h1>
+        <p class="subtitle">Complete su perfil profesional para continuar.</p>
       </div>
 
       <div v-if="errorMsg" class="error-banner">
-        {{ errorMsg }}
+        <i class="fa-solid fa-circle-exclamation" /> {{ errorMsg }}
       </div>
 
       <form @submit.prevent="handleSubmit" class="modal-form">
@@ -162,7 +145,7 @@ async function handleSubmit() {
             </div>
             
             <div class="form-group">
-            <label>Nombre del Negocio</label>
+            <label>Gerencia / Área</label>
             <div class="input-with-action">
                 <input 
                     v-model="businessName"
@@ -172,13 +155,13 @@ async function handleSubmit() {
                 />
             </div>
             <button type="button" class="text-btn small-margin" @click="toggleNoBusiness">
-                {{ hasNoBusiness ? '¡Ya tengo nombre!' : 'Aún no tengo, pero pronto tendré' }}
+                {{ hasNoBusiness ? '¡Ya tengo área!' : 'Aún no asignada' }}
             </button>
             </div>
         </div>
 
         <div class="form-group">
-          <label>Tipo de Negocio <span class="required">*</span></label>
+          <label>Departamento Principal <span class="required">*</span></label>
           <CustomSelect 
             v-model="businessType" 
             :options="businessTypeOptions" 
@@ -198,17 +181,17 @@ async function handleSubmit() {
 
         <div class="form-row">
             <div class="form-group">
-            <label>Empleados <span class="required">*</span></label>
+            <label>Equipo <span class="required">*</span></label>
             <CustomSelect 
                 v-model="employeeCount" 
                 :options="employeeCountOptions" 
-                placeholder="Rango" 
+                placeholder="Personas" 
                 required 
             />
             </div>
 
             <div class="form-group">
-            <label>Sucursales</label>
+            <label>Sedes</label>
             <input 
                 v-model.number="numberOfLocations"
                 type="number" 
@@ -219,7 +202,7 @@ async function handleSubmit() {
         </div>
 
         <div class="form-group">
-          <label>¿Cómo te enteraste de nosotros? <span class="required">*</span></label>
+          <label>¿Cómo conociste la plataforma? <span class="required">*</span></label>
           <CustomSelect 
             v-model="heardAboutUs" 
             :options="heardAboutUsOptions" 
@@ -239,7 +222,7 @@ async function handleSubmit() {
 
         <button type="submit" class="submit-btn" :disabled="!isFormValid || loading">
           <span v-if="loading">Guardando...</span>
-          <span v-else>Continuar</span>
+          <span v-else>Continuar <i class="fa-solid fa-arrow-right" /></span>
         </button>
 
       </form>
@@ -248,15 +231,18 @@ async function handleSubmit() {
 </template>
 
 <style lang="scss" scoped>
+$CNT-BLUE: #2094D2;
+$CNT-DARK: #010D27;
+
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.75); // Dark overlay
+  background-color: rgba(0, 0, 0, 0.75);
   backdrop-filter: blur(4px);
-  z-index: 9999; // Topmost
+  z-index: 9999;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -264,18 +250,18 @@ async function handleSubmit() {
 }
 
 .modal-content {
-  background: var(--bg); // Theme aware
-  color: var(--text); // Theme aware
+  background: var(--bg, #ffffff);
+  color: var(--text, #010D27);
   width: 100%;
-  max-width: 500px;
+  max-width: 580px;
   max-height: 90vh;
   overflow-y: auto;
-  padding: 2rem;
-  border-radius: 16px;
+  padding: 40px;
+  border-radius: 20px;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
   position: relative;
+  border: 1px solid rgba($CNT-DARK, 0.1);
 
-  // Custom scrollbar
   &::-webkit-scrollbar {
     width: 6px;
   }
@@ -288,41 +274,52 @@ async function handleSubmit() {
 
 .header {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 32px;
+
+  .brand-logo {
+    margin-bottom: 20px;
+
+    .logo {
+      height: 40px;
+    }
+  }
 
   h1 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-    color: var(--text);
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 8px;
+    color: var(--text, $CNT-DARK);
   }
 
   .subtitle {
-    color: var(--text);
-    opacity: 0.7;
-    font-size: 0.95rem;
+    color: var(--text, $CNT-DARK);
+    opacity: 0.6;
+    font-size: 15px;
   }
 }
 
 .error-banner {
-  background-color: #fee2e2;
-  color: #b91c1c;
-  padding: 0.75rem;
-  border-radius: 6px;
-  margin-bottom: 1.5rem;
-  font-size: 0.85rem;
-  text-align: center;
+  background-color: rgba(#ef4444, 0.1);
+  color: #ef4444;
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-bottom: 24px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid rgba(#ef4444, 0.2);
 }
 
 .modal-form {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 20px;
 }
 
 .form-row {
   display: flex;
-  gap: 1rem;
+  gap: 16px;
 
   .form-group {
     flex: 1;
@@ -332,66 +329,67 @@ async function handleSubmit() {
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 8px;
 
   label {
     font-weight: 600;
-    font-size: 0.85rem;
-    color: var(--text);
-    opacity: 0.9;
+    font-size: 14px;
+    color: var(--text, $CNT-DARK);
 
     .required {
       color: #ef4444;
-      margin-left: 2px;
     }
   }
 
   input,
   select {
-    padding: 0.75rem;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    font-size: 0.95rem;
+    padding: 12px 16px;
+    border: 1px solid var(--border, rgba($CNT-DARK, 0.1));
+    border-radius: 12px;
+    font-size: 16px;
     transition: all 0.2s;
-    background-color: var(--bg); // Theme aware
-    color: var(--text);
+    background-color: var(--bg, rgba($CNT-DARK, 0.03));
+    color: var(--text, $CNT-DARK);
 
     &:focus {
       outline: none;
-      border-color: var(--accent, #3b82f6);
-      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+      border-color: $CNT-BLUE;
+      box-shadow: 0 0 0 4px rgba($CNT-BLUE, 0.1);
+      background-color: var(--bg, #ffffff);
     }
 
     &::placeholder {
-      color: var(--text);
-      opacity: 0.4;
+      color: var(--text, $CNT-DARK);
+      opacity: 0.3;
     }
   }
 }
 
 .sub-group {
-  margin-top: -0.5rem;
-
-  input {
-    border-left: 3px solid var(--border);
-  }
+  padding-left: 16px;
+  border-left: 2px solid rgba($CNT-DARK, 0.1);
 }
 
 .submit-btn {
-  margin-top: 1rem;
-  background-color: var(--accent, #10b981); // Use accent or default green/blue
-  color: white; // Assuming accent implies light text
-  padding: 0.875rem;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 1rem;
+  margin-top: 12px;
+  background-color: $CNT-DARK;
+  color: white;
+  padding: 16px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 16px;
   border: none;
   cursor: pointer;
-  transition: filter 0.2s;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.2s;
+  box-shadow: 0 10px 20px -5px rgba($CNT-DARK, 0.3);
 
-  &:hover {
-    filter: brightness(1.1);
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 25px -5px rgba($CNT-DARK, 0.4);
   }
 
   &:disabled {
@@ -404,16 +402,17 @@ async function handleSubmit() {
 .text-btn {
   background: none;
   border: none;
-  color: var(--accent, #3b82f6);
-  font-size: 0.8rem;
+  color: $CNT-BLUE;
+  font-size: 12px;
+  font-weight: 600;
   cursor: pointer;
-  text-decoration: underline;
+  text-decoration: none;
   padding: 0;
-  margin-top: 0.25rem;
+  margin-top: 4px;
   align-self: flex-start;
 
   &:hover {
-    opacity: 0.8;
+    text-decoration: underline;
   }
 }
 </style>

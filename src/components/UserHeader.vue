@@ -137,8 +137,8 @@ watch(isLoggedIn, (val) => { if (val) fetchPoints(); else gamificationStore.rese
         <template v-if="isLoggedIn">
           <!-- CTA para usuarios FREE -->
           <button v-if="isFreeUser" class="upgrade-btn" @click="goToCheckout">
-            <i class="fa-solid fa-crown" />
-            <span>Hazte Founder</span>
+            <i class="fa-solid fa-star" />
+            <span>Acceso Total</span>
           </button>
 
           <div class="user-pill" title="Sesión iniciada">
@@ -208,7 +208,7 @@ watch(isLoggedIn, (val) => { if (val) fetchPoints(); else gamificationStore.rese
         gap: 12px;
 
         .login-button {
-          background: $FUDMASTER-GREEN;
+          background: $CNT-GREEN;
           color: $white;
           border: none;
           border-radius: 8px;
@@ -293,7 +293,7 @@ watch(isLoggedIn, (val) => { if (val) fetchPoints(); else gamificationStore.rese
 
           50% {
             transform: scale(1.2);
-            background: $FUDMASTER-GREEN;
+            background: $CNT-GREEN;
           }
 
           100% {
@@ -302,7 +302,7 @@ watch(isLoggedIn, (val) => { if (val) fetchPoints(); else gamificationStore.rese
         }
 
         .logout-button {
-          background: $FUDMASTER-DARK;
+          background: $CNT-DARK;
           color: $white;
           border: none;
           border-radius: 8px;

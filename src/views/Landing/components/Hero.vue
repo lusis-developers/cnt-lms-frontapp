@@ -1,34 +1,7 @@
 <script setup lang="ts">
-// import thumbnailSrc from '@/assets/statis/nicole-landing/nicole-vsl.jpeg'
-
-// const router = useRouter()
-// function goToCheckout() { router.push('/checkout') }
-
-
-// const isVideoLoaded = ref(false)
-// 
-// function loadVideo() {
-//   if (isVideoLoaded.value) return
-//   isVideoLoaded.value = true
-// 
-//   // Cargar scripts de Wistia dinámicamente solo al interactuar
-//   if (!document.getElementById('wistia-player-js')) {
-//     const script1 = document.createElement('script')
-//     script1.src = "https://fast.wistia.com/player.js"
-//     script1.async = true
-//     script1.id = 'wistia-player-js'
-//     document.head.appendChild(script1)
-//   }
-// 
-//   if (!document.getElementById('wistia-embed-js')) {
-//     const script2 = document.createElement('script')
-//     script2.src = "https://fast.wistia.com/embed/2f09oyiyxq.js"
-//     script2.async = true
-//     script2.type = "module"
-//     script2.id = 'wistia-embed-js'
-//     document.head.appendChild(script2)
-//   }
-// }
+import { useRouter } from 'vue-router'
+const router = useRouter()
+function goToDashboard() { router.push({ name: 'Dashboard' }) }
 </script>
 
 <template>
@@ -60,7 +33,7 @@
           </p>
 
           <div class="cta-wrapper">
-            <button class="cta-button" @click="() => { }">
+            <button class="cta-button" @click="goToDashboard">
               Explorar Demo Interactiva
             </button>
             <p class="cta-subtitle">Plataforma exclusiva para capacitación interna</p>
@@ -73,21 +46,13 @@
 </template>
 
 <style lang="scss" scoped>
-/* Asegúrate de que estas variables estén definidas en tu proyecto global
-   o descoméntalas aquí para probar */
-// $FUDMASTER-PRIMARY: #030b1c; /* Color oscuro de fondo aproximado */
-// $FUDMASTER-LIGHT: #ffffff;
-// $FUDMASTER-PINK: #e91e63;
-
 .vsl {
   &-hero {
     background-color: $CNT-DARK;
-    // min-height: 100vh; /* Ocupa toda la pantalla */
     display: flex;
     align-items: center;
-    /* Centra verticalmente todo el bloque */
     justify-content: center;
-    padding: 48px 20px;
+    padding: 64px 20px;
     position: relative;
     overflow: hidden;
   }
@@ -103,14 +68,14 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    gap: 40px;
-    /* Espacio entre video y texto */
+    gap: 60px;
   }
 
 
   .demo-placeholder {
     width: 100%;
     height: 100%;
+    min-height: 400px;
     background: linear-gradient(135deg, rgba($CNT-BLUE, 0.2) 0%, rgba($CNT-DARK, 0.5) 100%);
     display: flex;
     flex-direction: column;
@@ -118,24 +83,24 @@
     justify-content: center;
     color: $CNT-LIGHT;
     gap: 16px;
-    border-radius: 12px;
+    border-radius: 20px;
     border: 2px dashed rgba($CNT-LIGHT, 0.2);
 
     i {
-      font-size: 64px;
+      font-size: 80px;
       opacity: 0.8;
+      color: $CNT-BLUE;
     }
 
     span {
       font-size: 24px;
-      font-weight: 600;
+      font-weight: 700;
       letter-spacing: 1px;
     }
   }
 
-  /* --- COLUMNA TEXTO --- */
   &-content-column {
-    flex: 0.8;
+    flex: 1;
     color: $CNT-LIGHT;
     text-align: left;
     display: flex;
@@ -144,18 +109,22 @@
   }
 
   &-title {
-    font-size: 3.5rem;
-    font-weight: 800;
-    line-height: 1.1;
-    margin-bottom: 25px;
+    font-size: 4.5rem;
+    font-weight: 900;
+    line-height: 1.05;
+    margin-bottom: 24px;
     color: $CNT-LIGHT;
+
+    @media (max-width: 1200px) {
+      font-size: 3.5rem;
+    }
   }
 
   &-description {
     font-size: 1.25rem;
-    line-height: 1.5;
-    margin-bottom: 40px;
-    opacity: 0.9;
+    line-height: 1.6;
+    margin-bottom: 48px;
+    opacity: 0.8;
     max-width: 500px;
   }
 
@@ -166,29 +135,23 @@
   }
 }
 
-/* --- BOTÓN --- */
 .cta-button {
   background: $CNT-BLUE;
-  color: $CNT-LIGHT;
+  color: white;
   border: none;
-  padding: 18px 40px;
-  font-size: 1.1rem;
-  font-weight: 700;
+  padding: 20px 48px;
+  font-size: 1.2rem;
+  font-weight: 800;
   border-radius: 50px;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 4px 15px rgba($CNT-BLUE, 0.4);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 10px 20px rgba($CNT-BLUE, 0.3);
   white-space: nowrap;
 
-  @media screen and (max-width: 320px) {
-    padding: 14px 16px;
-    font-size: 0.75rem;
-  }
-
   &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba($CNT-BLUE, 0.6);
-    // filter: brightness(1.1); // Opcional para brillo
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba($CNT-BLUE, 0.5);
+    background-color: lighten($CNT-BLUE, 5%);
   }
 
   &:active {
@@ -198,26 +161,28 @@
 
 .cta-subtitle {
   font-size: 0.9rem;
-  margin-top: 10px;
-  opacity: 0.7;
-  font-weight: 300;
+  margin-top: 16px;
+  opacity: 0.6;
+  font-weight: 500;
 }
 
-/* --- RESPONSIVE MOBILE --- */
 @media (max-width: 960px) {
   .vsl-split-layout {
-    flex-direction: column;
-    gap: 40px;
+    flex-direction: column-reverse;
+    gap: 48px;
   }
 
   .vsl-content-column {
     text-align: center;
     align-items: center;
-    padding: 0 10px;
+  }
+
+  .vsl-video-column {
+    width: 100%;
   }
 
   .vsl-title {
-    font-size: 2.5rem;
+    font-size: 3rem;
   }
 
   .cta-wrapper {

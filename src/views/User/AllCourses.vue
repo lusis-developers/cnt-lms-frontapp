@@ -3,33 +3,17 @@ import { onMounted, ref, watch, computed } from 'vue'
 import { useCoursesStore } from '@/stores/courses'
 import UpgradeBanner from '@/components/UpgradeBanner.vue'
 import { makePlaceholders } from '@/mocks/courses.mock'
+import CourseCard from '@/components/CourseCard.vue'
+import { isComingSoon, isHidden } from '@/utils/courseUtils'
 
 const store = useCoursesStore()
-
-function sanitizeUrl(url?: string) {
-  return (url || '').toString().replace(/`/g, '').trim()
-}
-
-function coverOf(course: any) {
-  return sanitizeUrl(course.image_url) || sanitizeUrl(course.coverUrl) || '/src/assets/fudmaster-color.png'
-}
-
-function isActive(course: any) {
-  return !!course?.is_published
-}
 
 function isMockup(course: any) {
   return String(course?.id || '').startsWith('mock-')
 }
 
-function truncated(text: string, limit = 140) {
-  const t = (text || '').trim()
-  if (t.length <= limit) return { short: t, needs: false }
-  const short = t.slice(0, limit).replace(/\s+\S*$/, '') + '…'
-  return { short, needs: true }
-}
-
 const tick = ref<number>(Date.now())
+
 const deadlines = ref<number[]>([])
 
 function endOfNextSunday(): Date {
@@ -58,22 +42,12 @@ function resetAllToOneWeek() {
   deadlines.value = deadlines.value.map(() => t)
 }
 
-function pixelStyle(i: number) {
-  const hues = [120, 200, 20, 280]
-  const h = hues[i % hues.length]
-  return {
-    '--c1': `hsla(${h}, 60%, 60%, 0.18)`,
-    '--c2': `hsla(${h}, 40%, 40%, 0.14)`,
-    '--c3': `hsla(${h}, 30%, 30%, 0.10)`,
-  } as Record<string, string>
-}
-
 onMounted(() => {
   store.fetchAll()
 })
 
 const displayCourses = computed(() => {
-  const list = Array.isArray(store.courses) ? store.courses : []
+  const list = (Array.isArray(store.courses) ? store.courses : []).filter(c => !isHidden(c))
   const need = Math.max(0, 12 - list.length)
   const placeholders = makePlaceholders(need)
   return [...list, ...placeholders]
@@ -81,8 +55,18 @@ const displayCourses = computed(() => {
 
 const modalOpen = ref(false)
 const modalTitle = ref('')
-function openUpcoming(c: any) { modalTitle.value = String(c?.name || c?.title || 'Próximamente'); modalOpen.value = true }
+const modalDesc = ref('')
+
+function openUpcoming(c: any) {
+  modalTitle.value = String(c?.name || c?.title || 'Curso Próximamente')
+  const isMock = isMockup(c)
+  modalDesc.value = isMock
+    ? 'Esto es un entorno controlado para el demo. Este curso estará disponible muy pronto.'
+    : 'Este contenido estará disponible próximamente en tu cuenta. Estamos trabajando para brindarte la mejor experiencia.'
+  modalOpen.value = true
+}
 function closeModal() { modalOpen.value = false }
+
 
 watch(displayCourses, (list) => {
   initDeadlines(Array.isArray(list) ? list.length : 0)
@@ -94,6 +78,7 @@ window.setInterval(() => {
     resetAllToOneWeek()
   }
 }, 1000)
+
 </script>
 
 <template>
@@ -122,47 +107,44 @@ window.setInterval(() => {
           <span>No hay cursos disponibles por ahora.</span>
         </div>
         <div v-else class="cards">
-          <RouterLink v-for="(c, i) in displayCourses" :key="c._id || c.id" class="card" :to="`/courses/${c.id}`" :class="{ disabled: !isActive(c) }" @click.prevent="!isActive(c) && openUpcoming(c)">
-            <div class="cover" v-if="isActive(c)">
-              <img :src="coverOf(c)" alt="cover" />
-            </div>
-            <div v-else>
-              <img v-if="coverOf(c)" :src="coverOf(c)" alt="cover" class="blur-cover" />
-              <div v-else class="cover pixelated" :style="pixelStyle(i)"></div>
-            </div>
-            <div class="info">
-              <h3 class="name">{{ c.name || c.title || 'Curso sin título' }}</h3>
-              <p class="desc">
-                <span>{{ truncated(c.heading || c.description || c.shortDescription || 'Detalles próximamente.', 140).short }}</span>
-              </p>
-            </div>
-            <div class="meta">
-              <span class="status" :class="isActive(c) ? 'published' : 'upcoming'">{{ isActive(c) ? 'Publicado' : 'Próximamente' }}</span>
-              <span class="cta" :class="{ disabled: !isActive(c) }">
-                {{ isActive(c) ? 'Ver curso' : 'Muy pronto' }}
-                <i v-if="isActive(c)" class="fa-solid fa-arrow-right" />
-              </span>
-            </div>
-            <div v-if="!isActive(c) && isMockup(c)" class="countdown">
-              <span class="label">Disponible en:</span>
-              <span class="unit">{{ String(Math.floor(((deadlines[i] ?? tick) - tick) / (1000 * 60 * 60 * 24))).padStart(2, '0') }}d</span>
-              <span class="sep">:</span>
-              <span class="unit">{{ String(Math.floor((((deadlines[i] ?? tick) - tick) / (1000 * 60 * 60)) % 24)).padStart(2, '0') }}h</span>
-              <span class="sep">:</span>
-              <span class="unit">{{ String(Math.floor((((deadlines[i] ?? tick) - tick) / (1000 * 60)) % 60)).padStart(2, '0') }}m</span>
-              <span class="sep">:</span>
-              <span class="unit">{{ String(Math.floor((((deadlines[i] ?? tick) - tick) / 1000) % 60)).padStart(2, '0') }}s</span>
-            </div>
-          </RouterLink>
+          <CourseCard
+            v-for="(c, i) in displayCourses"
+            :key="c._id || c.id"
+            :course="c"
+            :to="`/courses/${c.id}`"
+            :show-published-badge="true"
+            :show-classes-count="!isMockup(c)"
+            :disabled="isMockup(c)"
+            :blocked="!isMockup(c) && isComingSoon(c)"
+            :countdown-to="isMockup(c) ? deadlines[i] : undefined"
+            @placeholder-click="openUpcoming(c)"
+            @blocked-click="openUpcoming(c)"
+          />
         </div>
-        <div v-if="modalOpen" class="modal-overlay" @click.self="closeModal">
-          <div class="modal">
-            <h3 class="modal-title"><i class="fa-solid fa-hourglass-half" /> {{ modalTitle }}</h3>
-            <p class="modal-desc">Este curso estará disponible pronto. Gracias por tu interés.</p>
-            <button class="modal-btn" type="button" @click="closeModal">Entendido</button>
+
+        <!-- Nice and Minimalist Modal -->
+        <Transition name="fade">
+          <div v-if="modalOpen" class="modal-root" @click.self="closeModal">
+            <div class="modal-container">
+              <div class="modal-header">
+                <div class="icon-circle">
+                  <i class="fa-solid fa-hourglass-half" />
+                </div>
+                <button class="close-btn" @click="closeModal">
+                  <i class="fa-solid fa-xmark" />
+                </button>
+              </div>
+              <div class="modal-content">
+                <h3 class="modal-title">{{ modalTitle }}</h3>
+                <p class="modal-desc">{{ modalDesc }}</p>
+              </div>
+
+              <button class="modal-action" type="button" @click="closeModal">Entendido</button>
+            </div>
           </div>
-        </div>
+        </Transition>
       </div>
+
     </div>
   </div>
 </template>
@@ -247,78 +229,131 @@ window.setInterval(() => {
   }
 }
 
-.card { background: var(--bg); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; display: grid; text-decoration: none; transition: border-color 0.2s ease, transform 0.2s ease; }
-.card.disabled { opacity: 0.7; }
-
-.cover img {
-  width: 100%;
-  height: 160px;
-  object-fit: cover;
-  display: block;
-}
-
-.blur-cover {
-  width: 100%;
-  height: 160px;
-  object-fit: cover;
-  filter: blur(6px);
-  display: block;
-}
-
-.cover.pixelated {
-  --c1: rgba($FUDMASTER-GREEN, 0.15);
-  --c2: rgba($FUDMASTER-DARK, 0.12);
-  --c3: rgba($FUDMASTER-DARK, 0.06);
-  background-image:
-    repeating-linear-gradient(0deg, var(--c1) 0 12px, var(--c2) 12px 24px),
-    repeating-linear-gradient(90deg, var(--c3) 0 12px, transparent 12px 24px);
-  background-size: 24px 24px;
-  width: 100%;
-  height: 160px;
-}
-
-.info {
-  display: grid;
-  gap: 6px;
-  padding: 12px;
-}
-
-.name {
-  color: var(--text);
-  margin: 0;
-  font-size: 18px;
-}
-
-.desc {
-  color: color-mix(in oklab, var(--text), transparent 40%);
-  margin: 0;
-  font-size: 14px;
-}
-
-.countdown { padding: 12px; border-top: 1px dashed var(--border); display: inline-flex; align-items: center; gap: 6px; font-family: monospace; font-weight: 700; color: var(--text); }
-.countdown .label { font-size: 12px; color: color-mix(in oklab, var(--text), transparent 60%); margin-right: 4px; }
-.countdown .unit { background: color-mix(in oklab, var(--accent), transparent 88%); color: var(--accent); padding: 4px 6px; border-radius: 6px; min-width: 36px; text-align: center; }
-.countdown .sep { color: color-mix(in oklab, var(--text), transparent 60%); }
-
-.meta {
-  padding: 12px;
-  border-top: 1px solid var(--border);
-  font-size: 13px;
-  color: color-mix(in oklab, var(--text), transparent 40%);
+.modal-root {
+  position: fixed;
+  inset: 0;
+  background: color-mix(in oklab, var(--text), transparent 80%);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: center;
+  z-index: 2000;
+  padding: 20px;
 }
-.status { border-radius: 999px; padding: 4px 8px; font-size: 12px; display: inline-flex; align-items: center; gap: 6px; }
-.status.published { background: color-mix(in oklab, var(--accent), transparent 88%); border: 1px solid var(--border); color: var(--accent); }
-.status.upcoming { background: $overlay-purple; color: $FUDMASTER-BLUE; border: 1px solid var(--border); }
-.cta { background: var(--accent); color: $white; border-radius: 999px; padding: 6px 10px; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; }
-.cta.disabled { background: color-mix(in oklab, var(--bg), var(--text) 6%); color: color-mix(in oklab, var(--text), transparent 50%); border: 1px solid var(--border); }
-.card:hover { border-color: var(--accent); transform: translateY(-1px); }
 
-.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-.modal { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 16px; width: min(480px, 92vw); display: grid; gap: 12px; color: var(--text); box-shadow: 0 12px 40px rgba(0,0,0,0.25); }
-.modal-title { margin: 0; font-size: 18px; display: inline-flex; align-items: center; gap: 8px; color: var(--text); }
-.modal-desc { margin: 0; color: color-mix(in oklab, var(--text), transparent 40%); }
-.modal-btn { background: var(--accent); color: $white; border: none; border-radius: 999px; padding: 10px 14px; font-weight: 700; cursor: pointer; justify-self: end; }
+.modal-container {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  width: 100%;
+  max-width: 400px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.25);
+  animation: modalIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.icon-circle {
+  width: 48px;
+  height: 48px;
+  background: color-mix(in oklab, var(--accent), transparent 90%);
+  color: var(--accent);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: color-mix(in oklab, var(--text), transparent 60%);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px;
+  transition: color 0.2s;
+
+  &:hover {
+    color: var(--text);
+  }
+}
+
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.modal-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.modal-desc {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: color-mix(in oklab, var(--text), transparent 40%);
+}
+
+.modal-action {
+  background: var(--accent);
+  color: $white;
+  border: none;
+  border-radius: 14px;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s, filter 0.2s;
+
+  &:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.1);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+@media (max-width: 480px) {
+  .modal-container {
+    padding: 24px;
+  }
+}
 </style>

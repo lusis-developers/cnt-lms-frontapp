@@ -141,7 +141,7 @@ async function submit() {
       }
     } catch { }
 
-    router.push('/')
+    router.push({ name: 'Dashboard' })
   } catch (e: any) {
     error.value = e?.message || 'Credenciales incorrectas. Intenta de nuevo.'
   } finally {
