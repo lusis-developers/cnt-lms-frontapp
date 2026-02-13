@@ -86,7 +86,11 @@ onMounted(async () => {
 .dashboard-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2.5rem 2rem;
+  padding: 1.5rem 1rem;
+
+  @media (min-width: 768px) {
+    padding: 2.5rem 2rem;
+  }
 }
 
 .dashboard-header {
@@ -94,11 +98,15 @@ onMounted(async () => {
 }
 
 .welcome-title {
-  font-size: 2.25rem;
+  font-size: 1.75rem;
   font-weight: 800;
   color: var(--text);
   margin: 0 0 0.5rem;
   letter-spacing: -0.02em;
+
+  @media (min-width: 768px) {
+    font-size: 2.25rem;
+  }
 
   .user-name {
     color: var(--accent);

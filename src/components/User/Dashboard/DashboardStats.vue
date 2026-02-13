@@ -50,12 +50,18 @@ defineProps<{
 <style lang="scss" scoped>
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.5rem;
+  grid-template-columns: 1fr;
+  gap: 1rem;
   margin-bottom: 2rem;
 
-  @media (min-width: 768px) {
+  @media (min-width: 480px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
+
+  @media (min-width: 992px) {
     grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
   }
 }
 
@@ -63,11 +69,15 @@ defineProps<{
   background-color: var(--bg);
   border: 1px solid var(--border);
   border-radius: 16px;
-  padding: 1.5rem;
+  padding: 1.25rem;
   display: flex;
   align-items: center;
   gap: 1rem;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  @media (min-width: 768px) {
+    padding: 1.5rem;
+  }
 
   &:hover {
     transform: translateY(-2px);
