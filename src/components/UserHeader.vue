@@ -4,8 +4,7 @@ import { useRouter, useRoute } from 'vue-router'
 import usersService from '@/services/users.service'
 import { useUserStore } from '@/stores/user'
 import { useGamificationStore } from '@/stores/gamification.store'
-import lightLogo from '../assets/fudmaster-color.png'
-import darkLogo from '../assets/fudmaster-dark.png'
+import logo from '@/assets/logo/logo.png'
 
 const props = defineProps({
   showMenuButton: {
@@ -38,7 +37,7 @@ const isFreeUser = computed(() => {
 const isDarkTheme = ref(false)
 let themeObserver: MutationObserver | null = null
 function updateThemeFlag() { isDarkTheme.value = document.documentElement.getAttribute('data-theme') === 'dark' }
-const logoSrc = computed(() => (isDarkTheme.value ? darkLogo : lightLogo))
+const logoSrc = computed(() => logo)
 
 const points = computed(() => gamificationStore.points)
 const pointsLoading = computed(() => gamificationStore.loading)
@@ -131,10 +130,7 @@ watch(isLoggedIn, (val) => { if (val) fetchPoints(); else gamificationStore.rese
           <i class="fa-solid fa-bars"></i>
         </button>
         <div class="logo">
-          <picture>
-            <source srcset="../assets/iso-verde.png" media="(max-width: 768px)">
-            <img :src="logoSrc" alt="fudmaster-logo" @click="onLogoClick">
-          </picture>
+          <img :src="logoSrc" alt="cnt-logo" @click="onLogoClick">
         </div>
       </div>
       <div class="user-header-wrapper-right">

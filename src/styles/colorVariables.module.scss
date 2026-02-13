@@ -1,17 +1,26 @@
-$FUDMASTER-PINK: #DA4167;
-$FUDMASTER-DARK: #010D27;
-$FUDMASTER-LIGHT: #f5f3ef;
-$FUDMASTER-BLUE: #0a81d1;
-$FUDMASTER-ORANGE: #F96E46;
+$CNT-BLUE: #2094D2;
+$CNT-DARK: #010D27;
+$CNT-LIGHT: #fefefe;
+$CNT-SECONDARY: #2BBB92;
+
+$white: #fefefe;
+$text-light: #fefefe;
+$overlay-blue: rgba($CNT-BLUE, 0.1);
+$overlay-purple: $overlay-blue; // Aliased for compatibility
+
+$CNT-GREEN: #2BBB92;
+
+$FUDMASTER-BLUE: $CNT-BLUE;
+$FUDMASTER-DARK: $CNT-DARK;
+$FUDMASTER-LIGHT: $CNT-LIGHT;
+$FUDMASTER-GREEN: $CNT-GREEN;
+$FUDMASTER-SECONDARY: $CNT-SECONDARY;
+$FUDMASTER-PRIMARY: $CNT-DARK;
+$FUDMASTER-PINK: #DA4167; 
+$FUDMASTER-ORANGE: #F96E46; 
 $FUDMASTER-PURPLE: #7F5A83; 
-$FUDMASTER-PRIMARY: #010D27;
-$FUDMASTER-SECONDARY: #2BBB92;
 
-$white: #ffffff;
-$text-light: #f5f5f5;
-$overlay-purple: rgba($FUDMASTER-BLUE, 0.1);
 
-$FUDMASTER-GREEN: #2BBB92;
 
 // Alert colors
 $alert-warning: #f59e0b;

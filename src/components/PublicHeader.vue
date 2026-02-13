@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import lightLogo from '../assets/fudmaster-color.png'
-import darkLogo from '../assets/fudmaster-dark.png'
+import logo from '@/assets/logo/logo.png'
 import ExitIntentModal from './ExitIntentModal.vue'
 
 const router = useRouter()
@@ -12,7 +11,7 @@ const route = useRoute()
 const isDarkTheme = ref(false)
 let themeObserver: MutationObserver | null = null
 function updateThemeFlag() { isDarkTheme.value = document.documentElement.getAttribute('data-theme') === 'dark' }
-const logoSrc = computed(() => (isDarkTheme.value ? darkLogo : lightLogo))
+const logoSrc = computed(() => logo)
 
 // Exit Intent Logic (Mainly for Checkout)
 const exitOpen = ref(false)
@@ -53,10 +52,7 @@ onBeforeUnmount(() => {
     <div class="public-header-wrapper">
       <div class="public-header-wrapper-left">
         <div class="logo">
-          <picture>
-            <source srcset="../assets/iso-verde.png" media="(max-width: 768px)">
-            <img :src="logoSrc" alt="fudmaster-logo" @click="onLogoClick">
-          </picture>
+          <img :src="logoSrc" alt="cnt-logo" @click="onLogoClick">
         </div>
       </div>
       <div class="public-header-wrapper-right">
@@ -92,7 +88,7 @@ onBeforeUnmount(() => {
   <div class="mobile-menu-overlay" :class="{ 'active': isMobileMenuOpen }" @click="closeMobileMenu"></div>
   <aside class="mobile-sidebar" :class="{ 'active': isMobileMenuOpen }">
     <div class="mobile-sidebar-header">
-      <img :src="logoSrc" alt="Fudmaster" class="mobile-logo">
+      <img :src="logoSrc" alt="CNT" class="mobile-logo">
       <button class="close-button" @click="closeMobileMenu">
         <i class="fa-solid fa-xmark"></i>
       </button>

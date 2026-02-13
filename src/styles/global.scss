@@ -10,17 +10,18 @@ body {
 
 :root {
   --bg: #{$white};
-  --text: #{$FUDMASTER-DARK};
-  --border: #{rgba($FUDMASTER-DARK, 0.08)};
-  --accent: #{$FUDMASTER-GREEN};
+  --text: #{$CNT-DARK};
+  --border: #{rgba($CNT-DARK, 0.08)};
+  --accent: #{$CNT-BLUE};
 }
 
 [data-theme='dark'] {
-  --bg: #{$FUDMASTER-DARK};
+  --bg: #{$CNT-DARK};
   --text: #{$text-light};
   --border: #{rgba($white, 0.12)};
-  --accent: #{$FUDMASTER-SECONDARY};
+  --accent: #{$CNT-BLUE};
 }
+
 
 body { background-color: var(--bg); color: var(--text); }
 
