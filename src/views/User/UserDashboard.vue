@@ -5,7 +5,6 @@ import dashboardService from '@/services/dashboard.service';
 import type { DashboardStats, RecentCourse } from '@/types/dashboard';
 import DashboardStatsDisplay from '@/components/User/Dashboard/DashboardStats.vue';
 import RecentCourses from '@/components/User/Dashboard/RecentCourses.vue';
-import { isGastronomic, isHidden } from '@/utils/courseUtils';
 
 
 
@@ -37,7 +36,7 @@ const fetchDashboardData = async () => {
     const { data } = await dashboardService.getDashboard(userStore.id);
 
     stats.value = data.stats;
-    recentCourses.value = (data.recentCourses || []).filter(c => isGastronomic(c) && !isHidden(c));
+    recentCourses.value = data.recentCourses || [];
   } catch (err: any) {
 
 

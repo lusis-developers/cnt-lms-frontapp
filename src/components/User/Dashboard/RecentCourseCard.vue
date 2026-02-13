@@ -11,10 +11,27 @@ const progressStyle = computed(() => ({
 }));
 
 const continueUrl = computed(() => {
-  if (props.course.nextLecture) {
-    return props.course.nextLecture.url;
+  let url = props.course.nextLecture?.url || props.course.nextLecture?.id?.toString() || `/courses/${props.course.courseId}`;
+
+  // If it's an absolute URL, try to make it relative if it's within our domain logic
+  if (typeof url === 'string' && url.startsWith('http')) {
+    try {
+      const parsed = new URL(url);
+      // Extraemos la ruta si coincide con el patrón esperado /courses/...
+      if (parsed.pathname.includes('/courses/')) {
+        return parsed.pathname;
+      }
+    } catch (e) {
+      console.warn('Silent URL parsing error:', e);
+    }
   }
-  return `/courses/${props.course.courseId}`;
+
+  // If it's just an ID or already relative
+  if (url && !url.includes('/') && !isNaN(Number(url))) {
+    return `/courses/${props.course.courseId}/lectures/${url}`;
+  }
+
+  return url;
 });
 </script>
 
