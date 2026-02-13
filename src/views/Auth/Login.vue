@@ -19,9 +19,9 @@ const loadingGoogle = ref(false) // Nuevo estado para Google
 const error = ref('')
 const info = ref(String(route.query.msg || ''))
 
-function goToCheckout() {
-  router.push('/checkout')
-}
+// function goToCheckout() {
+//   router.push('/checkout')
+// }
 
 function togglePassword() {
   showPassword.value = !showPassword.value
@@ -148,19 +148,30 @@ async function submit() {
     loading.value = false
   }
 }
+
+function showDemoNotice() {
+  window.dispatchEvent(new CustomEvent('app:confirm', {
+    detail: {
+      title: 'Modo Demostración',
+      message: 'Esta es una versión de demostración para CNT. El botón de soporte no tiene funcionalidad en este entorno controlado.',
+      confirmText: 'Entendido',
+      cancelText: 'Cerrar'
+    }
+  }))
+}
 </script>
 
 <template>
   <div class="login-page">
     
     <div class="brand-header">
-      <img src="/src/assets/fudmaster-color.png" alt="Fudmaster" class="logo" />
+      <img src="@/assets/logo/logo.png" alt="CNT" class="logo" />
     </div>
 
     <div class="card">
       <div class="card-body">
-        <h2 class="title">Bienvenido de nuevo</h2>
-        <p class="subtitle">Ingresa a tu panel de control</p>
+        <h2 class="title">Plataforma LMS</h2>
+        <p class="subtitle">Demo exclusiva realizada para CNT</p>
 
         <div v-if="info" class="alert info">
           <i class="fa-solid fa-circle-info" /> {{ info }}
@@ -189,7 +200,6 @@ async function submit() {
           <div class="form-group">
             <div class="label-row">
               <label for="password">Contraseña</label>
-              <router-link to="/request-password-recovery" class="forgot-link">¿Olvidaste tu contraseña?</router-link>
             </div>
             <div class="input-wrapper">
               <i class="fa-solid fa-lock icon" />
@@ -225,23 +235,22 @@ async function submit() {
       </div>
 
       <div class="card-footer">
-        <span class="hint">¿Aún no eres miembro Founder?</span>
-        <button class="buy-btn" type="button" @click="goToCheckout">
-          Obtener Acceso de por Vida
+        <span class="hint">¿Necesitas ayuda con tu acceso?</span>
+        <button class="buy-btn" type="button" @click="showDemoNotice">
+          Contactar Soporte
         </button>
       </div>
     </div>
     
-    <p class="copyright">© Füdmaster Inc. Sistema seguro.</p>
+    <p class="copyright">© {{ new Date().getFullYear() }} CNT EP. Plataforma Demo de Capacitación.</p>
   </div>
 </template>
 
 <style lang="scss" scoped>
 // Variables locales (asumiendo que las globales están disponibles, pero por seguridad)
-$FUDMASTER-DARK: #010D27;
-$FUDMASTER-LIGHT: #f5f3ef;
-$FUDMASTER-GREEN: #2BBB92;
-$FUDMASTER-BLUE: #0a81d1;
+$CNT-BLUE: #2094D2;
+$CNT-DARK: #010D27;
+$CNT-LIGHT: #fefefe;
 $white: #ffffff;
 $alert-error: #ef4444;
 $alert-info: #3b82f6;
@@ -250,7 +259,7 @@ $alert-info: #3b82f6;
   width: 100%;
   min-height: 100vh;
   padding: 40px 16px;
-  background-color: $FUDMASTER-LIGHT; // Fondo de página claro
+  background-color: $CNT-LIGHT; // Fondo de página claro
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -272,9 +281,9 @@ $alert-info: #3b82f6;
   max-width: 480px;
   background: $white;
   border-radius: 20px;
-  box-shadow: 0 20px 40px -10px rgba($FUDMASTER-DARK, 0.1);
+  box-shadow: 0 20px 40px -10px rgba($CNT-DARK, 0.1);
   overflow: hidden; // Para que el footer no se salga
-  border: 1px solid rgba($FUDMASTER-DARK, 0.05);
+  border: 1px solid rgba($CNT-DARK, 0.05);
   animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -283,7 +292,7 @@ $alert-info: #3b82f6;
 }
 
 .title {
-  color: $FUDMASTER-DARK;
+  color: $CNT-DARK;
   font-size: 26px;
   font-weight: 800;
   margin: 0;
@@ -291,7 +300,7 @@ $alert-info: #3b82f6;
 }
 
 .subtitle {
-  color: rgba($FUDMASTER-DARK, 0.6);
+  color: rgba($CNT-DARK, 0.6);
   font-size: 15px;
   margin: 8px 0 24px 0;
   text-align: center;
@@ -332,7 +341,7 @@ $alert-info: #3b82f6;
   label {
     font-size: 14px;
     font-weight: 600;
-    color: $FUDMASTER-DARK;
+    color: $CNT-DARK;
   }
 }
 
@@ -344,7 +353,7 @@ $alert-info: #3b82f6;
 
 .forgot-link {
   font-size: 12px;
-  color: $FUDMASTER-BLUE;
+  color: $CNT-BLUE;
   text-decoration: none;
   font-weight: 500;
 
@@ -357,20 +366,20 @@ $alert-info: #3b82f6;
   display: flex;
   align-items: center;
   gap: 12px;
-  background: rgba($FUDMASTER-DARK, 0.03);
-  border: 1px solid rgba($FUDMASTER-DARK, 0.1);
+  background: rgba($CNT-DARK, 0.03);
+  border: 1px solid rgba($CNT-DARK, 0.1);
   border-radius: 12px;
   padding: 12px 16px;
   transition: all 0.2s ease;
 
   &:focus-within {
     background: $white;
-    border-color: $FUDMASTER-BLUE;
-    box-shadow: 0 0 0 4px rgba($FUDMASTER-BLUE, 0.1);
+    border-color: $CNT-BLUE;
+    box-shadow: 0 0 0 4px rgba($CNT-BLUE, 0.1);
   }
 
   .icon {
-    color: rgba($FUDMASTER-DARK, 0.5);
+    color: rgba($CNT-DARK, 0.5);
     font-size: 18px;
   }
 
@@ -380,10 +389,10 @@ $alert-info: #3b82f6;
     background: transparent;
     outline: none;
     font-size: 16px;
-    color: $FUDMASTER-DARK;
+    color: $CNT-DARK;
 
     &::placeholder {
-      color: rgba($FUDMASTER-DARK, 0.3);
+      color: rgba($CNT-DARK, 0.3);
     }
   }
 
@@ -392,11 +401,11 @@ $alert-info: #3b82f6;
     border: none;
     padding: 4px;
     cursor: pointer;
-    color: rgba($FUDMASTER-DARK, 0.4);
+    color: rgba($CNT-DARK, 0.4);
     transition: color 0.2s;
 
     &:hover {
-      color: $FUDMASTER-DARK;
+      color: $CNT-DARK;
     }
   }
 }
@@ -404,7 +413,7 @@ $alert-info: #3b82f6;
 .submit-btn {
   margin-top: 10px;
   width: 100%;
-  background: $FUDMASTER-DARK; // Color solido oscuro para login
+  background: $CNT-DARK; // Color solido oscuro para login
   color: $white;
   border: none;
   border-radius: 12px;
@@ -420,7 +429,7 @@ $alert-info: #3b82f6;
 
   &:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 10px 20px -5px rgba($FUDMASTER-DARK, 0.3);
+    box-shadow: 0 10px 20px -5px rgba($CNT-DARK, 0.3);
   }
 
   &:disabled {
@@ -441,12 +450,12 @@ $alert-info: #3b82f6;
     content: '';
     flex: 1;
     height: 1px;
-    background: rgba($FUDMASTER-DARK, 0.1);
+    background: rgba($CNT-DARK, 0.1);
   }
 
   span {
     padding: 0 10px;
-    color: rgba($FUDMASTER-DARK, 0.5);
+    color: rgba($CNT-DARK, 0.5);
     font-size: 13px;
     font-weight: 500;
   }
@@ -455,8 +464,8 @@ $alert-info: #3b82f6;
 .google-btn {
   width: 100%;
   background: $white;
-  color: $FUDMASTER-DARK;
-  border: 1px solid rgba($FUDMASTER-DARK, 0.2);
+  color: $CNT-DARK;
+  border: 1px solid rgba($CNT-DARK, 0.2);
   border-radius: 12px;
   padding: 14px;
   font-size: 16px;
@@ -470,7 +479,7 @@ $alert-info: #3b82f6;
 
   &:hover:not(:disabled) {
     background: #f8f9fa;
-    border-color: rgba($FUDMASTER-DARK, 0.4);
+    border-color: rgba($CNT-DARK, 0.4);
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   }
@@ -489,9 +498,9 @@ $alert-info: #3b82f6;
 
 // Footer seccion (Upsell)
 .card-footer {
-  background: rgba($FUDMASTER-DARK, 0.03);
+  background: rgba($CNT-DARK, 0.03);
   padding: 20px 32px;
-  border-top: 1px solid rgba($FUDMASTER-DARK, 0.05);
+  border-top: 1px solid rgba($CNT-DARK, 0.05);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -500,13 +509,13 @@ $alert-info: #3b82f6;
 
   .hint {
     font-size: 14px;
-    color: rgba($FUDMASTER-DARK, 0.6);
+    color: rgba($CNT-DARK, 0.6);
   }
 
   .buy-btn {
     background: transparent;
-    border: 2px solid $FUDMASTER-GREEN; // Borde verde para llamar atención sin ser agresivo
-    color: $FUDMASTER-GREEN;
+    border: 2px solid $CNT-BLUE;
+    color: $CNT-BLUE;
     font-weight: 700;
     padding: 10px 20px;
     border-radius: 10px;
@@ -515,7 +524,7 @@ $alert-info: #3b82f6;
     font-size: 14px;
 
     &:hover {
-      background: $FUDMASTER-GREEN;
+      background: $CNT-BLUE;
       color: $white;
     }
   }
@@ -523,7 +532,7 @@ $alert-info: #3b82f6;
 
 .copyright {
   font-size: 12px;
-  color: rgba($FUDMASTER-DARK, 0.4);
+  color: rgba($CNT-DARK, 0.4);
 }
 
 @keyframes slideUp {

@@ -13,11 +13,11 @@ const result = ref<any>(null)
 
 async function verify() {
   if (!certificateId.value.trim()) return
-  
+
   loading.value = true
   error.value = ''
   result.value = null
-  
+
   try {
     const { data } = await certificatesService.verify(certificateId.value.trim())
     result.value = data
@@ -125,7 +125,7 @@ onMounted(() => {
   background: var(--bg, #fff);
   border-radius: 24px;
   padding: 32px;
-  box-shadow: 0 20px 40px -10px rgba(0,0,0,0.1);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1);
   border: 1px solid var(--border, #eee);
   animation: slideUp 0.4s ease-out;
 }
@@ -136,7 +136,7 @@ onMounted(() => {
 
   .icon {
     font-size: 48px;
-    color: var(--accent, #2BBB92);
+    color: var(--accent, #2094D2);
     margin-bottom: 16px;
   }
 
@@ -162,7 +162,7 @@ onMounted(() => {
 
 .input-wrapper {
   position: relative;
-  
+
   .input-icon {
     position: absolute;
     left: 16px;
@@ -183,7 +183,7 @@ onMounted(() => {
 
     &:focus {
       outline: none;
-      border-color: var(--accent, #2BBB92);
+      border-color: var(--accent, #2094D2);
       background: var(--bg, #fff);
       box-shadow: 0 0 0 4px rgba(43, 187, 146, 0.1);
     }
@@ -204,7 +204,7 @@ onMounted(() => {
   transition: all 0.2s;
 
   &.primary {
-    background: var(--accent, #2BBB92);
+    background: var(--accent, #2094D2);
     color: white;
 
     &:hover:not(:disabled) {
@@ -220,12 +220,12 @@ onMounted(() => {
 
   &.outline {
     background: transparent;
-    border: 2px solid var(--accent, #2BBB92);
-    color: var(--accent, #2BBB92);
+    border: 2px solid var(--accent, #2094D2);
+    color: var(--accent, #2094D2);
     text-decoration: none;
 
     &:hover {
-      background: var(--accent, #2BBB92);
+      background: var(--accent, #2094D2);
       color: white;
     }
   }
@@ -248,8 +248,8 @@ onMounted(() => {
 }
 
 .result-card {
-  background: color-mix(in oklab, var(--accent, #2BBB92), transparent 95%);
-  border: 1px solid color-mix(in oklab, var(--accent, #2BBB92), transparent 80%);
+  background: color-mix(in oklab, var(--accent, #2094D2), transparent 95%);
+  border: 1px solid color-mix(in oklab, var(--accent, #2094D2), transparent 80%);
   border-radius: 16px;
   padding: 24px;
   animation: fadeIn 0.3s ease;
@@ -280,7 +280,7 @@ onMounted(() => {
   align-items: center;
   font-size: 14px;
   padding-bottom: 8px;
-  border-bottom: 1px dashed rgba(0,0,0,0.05);
+  border-bottom: 1px dashed rgba(0, 0, 0, 0.05);
 
   &:last-child {
     border-bottom: none;
@@ -300,7 +300,7 @@ onMounted(() => {
   .code {
     font-family: monospace;
     letter-spacing: 1px;
-    background: rgba(0,0,0,0.05);
+    background: rgba(0, 0, 0, 0.05);
     padding: 2px 6px;
     border-radius: 4px;
     word-break: break-all;
@@ -320,12 +320,24 @@ onMounted(() => {
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 </style>

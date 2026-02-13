@@ -2,7 +2,6 @@
 import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import logo from '@/assets/logo/logo.png'
-import ExitIntentModal from './ExitIntentModal.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -13,20 +12,12 @@ let themeObserver: MutationObserver | null = null
 function updateThemeFlag() { isDarkTheme.value = document.documentElement.getAttribute('data-theme') === 'dark' }
 const logoSrc = computed(() => logo)
 
-// Exit Intent Logic (Mainly for Checkout)
-const exitOpen = ref(false)
 const isMobileMenuOpen = ref(false)
 function toggleMobileMenu() { isMobileMenuOpen.value = !isMobileMenuOpen.value }
 function closeMobileMenu() { isMobileMenuOpen.value = false }
 function onLogoClick() {
-  if (route.path === '/checkout') {
-    exitOpen.value = true
-  } else {
-    router.push('/landing-page')
-  }
+  router.push('/')
 }
-function stayOnCheckout() { exitOpen.value = false }
-function goToLanding() { exitOpen.value = false; router.push('/landing-page') }
 
 function goToVerify() {
   router.push('/verify-certificate')
@@ -43,7 +34,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  try { themeObserver?.disconnect() } catch {}
+  try { themeObserver?.disconnect() } catch { }
 })
 </script>
 
@@ -58,10 +49,6 @@ onBeforeUnmount(() => {
       <div class="public-header-wrapper-right">
         <!-- Desktop Buttons -->
         <div class="desktop-menu">
-          <button class="promo-button" @click="goToLanding">
-            <i class="fa-solid fa-fire"></i>
-            <span>Aprovechar Promoción</span>
-          </button>
           <button 
             class="verify-button" 
             :class="{ 'active': route.path === '/verify-certificate' }"
@@ -95,10 +82,6 @@ onBeforeUnmount(() => {
     </div>
     
     <nav class="mobile-nav">
-      <button class="mobile-nav-item promo" @click="goToLanding(); closeMobileMenu()">
-        <i class="fa-solid fa-fire"></i>
-        <span>Aprovechar Promoción</span>
-      </button>
       
       <button 
         class="mobile-nav-item" 
@@ -120,14 +103,6 @@ onBeforeUnmount(() => {
     </nav>
   </aside>
 
-  <ExitIntentModal
-    v-if="route.path === '/checkout'"
-    :open="exitOpen"
-    message="Estás a un paso de asegurar tu acceso. Si sales de esta página ahora, el sistema liberará tu cupo y no podemos garantizarte el precio de $297 cuando regreses."
-    @close="stayOnCheckout"
-    @stay="stayOnCheckout"
-    @leave="goToLanding"
-  />
 </template>
 
 <style lang="scss" scoped>
@@ -150,9 +125,10 @@ onBeforeUnmount(() => {
         display: flex;
         align-items: center;
         gap: 16px;
-        
+
         .logo {
           width: 120px;
+
           img {
             width: 100%;
             cursor: pointer;
@@ -179,32 +155,12 @@ onBeforeUnmount(() => {
           color: var(--text);
           cursor: pointer;
           padding: 4px;
-          
+
           &:hover {
             color: var(--accent);
           }
         }
 
-        .promo-button {
-          background: var(--accent);
-          color: $white;
-          border: none;
-          border-radius: 8px;
-          padding: 8px 16px;
-          font-size: 14px;
-          font-weight: 700;
-          cursor: pointer;
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          transition: all 0.2s;
-          box-shadow: 0 4px 12px color-mix(in oklab, var(--accent), transparent 70%);
-
-          &:hover {
-            filter: brightness(1.1);
-            transform: translateY(-1px);
-          }
-        }
 
         .verify-button {
           background: transparent;
@@ -319,7 +275,7 @@ onBeforeUnmount(() => {
       color: var(--text);
       cursor: pointer;
       padding: 4px;
-      
+
       &:hover {
         color: var(--accent);
       }
@@ -353,7 +309,8 @@ onBeforeUnmount(() => {
         text-align: center;
       }
 
-      &:hover, &.active {
+      &:hover,
+      &.active {
         background: var(--bg-hover, #f5f5f5);
         color: var(--accent);
       }
@@ -364,18 +321,6 @@ onBeforeUnmount(() => {
         font-weight: 600;
       }
 
-      &.promo {
-        background: var(--accent);
-        color: $white;
-        font-weight: 700;
-        box-shadow: 0 4px 12px color-mix(in oklab, var(--accent), transparent 70%);
-        margin-bottom: 8px;
-
-        &:hover {
-          filter: brightness(1.1);
-          transform: translateY(-1px);
-        }
-      }
     }
   }
 }
@@ -385,7 +330,7 @@ onBeforeUnmount(() => {
     .desktop-menu {
       display: none; // Hide desktop menu on mobile
     }
-    
+
     .mobile-toggle {
       display: block; // Show toggle button
     }

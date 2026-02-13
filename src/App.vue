@@ -5,20 +5,20 @@ import { useUserStore } from '@/stores/user'
 import { loadThirdPartyScripts } from '@/utils/thirdPartyScripts'
 
 useHead({
-  title: 'Fudmaster | lleva tu cocina al siguiente nivel',
-  titleTemplate: (title) => title ? `${title} | Fudmaster` : 'Fudmaster',
+  title: 'Plataforma de Capacitación | CNT',
+  titleTemplate: (title) => title ? `${title} | CNT Demo` : 'CNT Demo',
   meta: [
-    { name: 'description', content: 'Fudmaster es la plataforma líder para llevar tu cocina al siguiente nivel con cursos exclusivos y expertos.' },
-    { property: 'og:title', content: 'Fudmaster | lleva tu cocina al siguiente nivel' },
-    { property: 'og:description', content: 'Aprende cocina profesional con los mejores. Cursos online, técnicas avanzadas y comunidad gastronómica.' },
+    { name: 'description', content: 'Plataforma avanzada de capacitación digital diseñada para potenciar el talento humano en CNT.' },
+    { property: 'og:title', content: 'LMS Demo | CNT' },
+    { property: 'og:description', content: 'Explora soluciones de aprendizaje corporativo con tecnología de vanguardia.' },
     { property: 'og:type', content: 'website' },
-    { property: 'og:image', content: '/favicon.png' }, // Should be a full URL in production
+    { property: 'og:image', content: '/favicon.png' },
     { name: 'twitter:card', content: 'summary_large_image' },
-    { name: 'twitter:title', content: 'Fudmaster | Aprende cocina profesional' },
-    { name: 'twitter:description', content: 'Plataforma de formación gastronómica para todos los niveles.' },
+    { name: 'twitter:title', content: 'CNT Demo | Capacitación Corporativa' },
+    { name: 'twitter:description', content: 'Plataforma de formación para el crecimiento organizacional.' },
   ],
   link: [
-    { rel: 'canonical', href: 'https://fudmaster.com.ec' } // Adjust to real domain
+    { rel: 'canonical', href: 'https://demo-cnt.fudmaster.com.ec' }
   ]
 })
 
@@ -113,7 +113,7 @@ onMounted(() => {
 
 .global-modal-panel {
   background: $white;
-  border: 1px solid rgba($FUDMASTER-DARK, 0.08);
+  border: 1px solid rgba($CNT-DARK, 0.08);
   border-radius: 12px;
   width: 100%;
   max-width: 440px;
@@ -124,13 +124,13 @@ onMounted(() => {
 
 .global-modal-title {
   margin: 0;
-  color: $FUDMASTER-DARK;
+  color: $CNT-DARK;
   font-size: 18px;
 }
 
 .global-modal-message {
   margin: 0;
-  color: rgba($FUDMASTER-DARK, 0.8);
+  color: rgba($CNT-DARK, 0.8);
   font-size: 14px;
 }
 
@@ -149,7 +149,7 @@ onMounted(() => {
 }
 
 .btn.cancel {
-  background: $FUDMASTER-LIGHT;
+  background: $CNT-LIGHT;
   color: $FUDMASTER-DARK;
   border: 1px solid rgba($FUDMASTER-DARK, 0.12);
 }

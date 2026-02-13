@@ -21,7 +21,7 @@ async function submit() {
   loading.value = true
   error.value = ''
   successMessage.value = ''
-  
+
   try {
     const response = await userStore.requestPasswordRecovery(email.value.trim().toLowerCase())
     successMessage.value = response.message || 'Se ha enviado un correo con instrucciones.'
@@ -41,7 +41,7 @@ async function submit() {
   <div class="recovery-page">
     
     <div class="brand-header">
-      <img src="/src/assets/fudmaster-color.png" alt="Fudmaster" class="logo" />
+      <img src="@/assets/logo/logo.png" alt="CNT" class="logo" />
     </div>
 
     <div class="card">
@@ -96,25 +96,24 @@ async function submit() {
       </div>
     </div>
     
-    <p class="copyright">© Füdmaster Inc. Sistema seguro.</p>
+    <p class="copyright">© {{ new Date().getFullYear() }} CNT EP. Plataforma Demo de Capacitación.</p>
   </div>
 </template>
 
 <style lang="scss" scoped>
 // Variables locales
-$FUDMASTER-DARK: #010D27;
-$FUDMASTER-LIGHT: #f5f3ef;
-$FUDMASTER-GREEN: #2BBB92;
-$FUDMASTER-BLUE: #0a81d1;
+$CNT-BLUE: #2094D2;
+$CNT-DARK: #010D27;
+$CNT-LIGHT: #fefefe;
 $white: #ffffff;
 $alert-error: #ef4444;
 $alert-success: #10b981;
 
-.recovery-page { 
-  width: 100%; 
+.recovery-page {
+  width: 100%;
   min-height: 100vh;
   padding: 40px 16px;
-  background-color: $FUDMASTER-LIGHT;
+  background-color: $CNT-LIGHT;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -124,6 +123,7 @@ $alert-success: #10b981;
 
 .brand-header {
   text-align: center;
+
   .logo {
     height: 48px;
     width: auto;
@@ -135,9 +135,9 @@ $alert-success: #10b981;
   max-width: 480px;
   background: $white;
   border-radius: 20px;
-  box-shadow: 0 20px 40px -10px rgba($FUDMASTER-DARK, 0.1);
+  box-shadow: 0 20px 40px -10px rgba($CNT-DARK, 0.1);
   overflow: hidden;
-  border: 1px solid rgba($FUDMASTER-DARK, 0.05);
+  border: 1px solid rgba($CNT-DARK, 0.05);
   animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -146,7 +146,7 @@ $alert-success: #10b981;
 }
 
 .title {
-  color: $FUDMASTER-DARK;
+  color: $CNT-DARK;
   font-size: 26px;
   font-weight: 800;
   margin: 0;
@@ -154,7 +154,7 @@ $alert-success: #10b981;
 }
 
 .subtitle {
-  color: rgba($FUDMASTER-DARK, 0.6);
+  color: rgba($CNT-DARK, 0.6);
   font-size: 15px;
   margin: 8px 0 24px 0;
   text-align: center;
@@ -168,19 +168,25 @@ $alert-success: #10b981;
   align-items: center;
   gap: 10px;
   margin-bottom: 20px;
-  
+
   &.error {
     background: rgba($alert-error, 0.1);
     color: darken($alert-error, 10%);
     border: 1px solid rgba($alert-error, 0.2);
-    i { color: $alert-error; }
+
+    i {
+      color: $alert-error;
+    }
   }
-  
+
   &.success {
     background: rgba($alert-success, 0.1);
     color: darken($alert-success, 10%);
     border: 1px solid rgba($alert-success, 0.2);
-    i { color: $alert-success; }
+
+    i {
+      color: $alert-success;
+    }
   }
 }
 
@@ -194,48 +200,48 @@ $alert-success: #10b981;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  
+
   label {
     font-size: 14px;
     font-weight: 600;
-    color: $FUDMASTER-DARK;
+    color: $CNT-DARK;
   }
 }
 
 .input-wrapper {
   position: relative;
-  
+
   .icon {
     position: absolute;
     left: 16px;
     top: 50%;
     transform: translateY(-50%);
-    color: rgba($FUDMASTER-DARK, 0.4);
+    color: rgba($CNT-DARK, 0.4);
     pointer-events: none;
     transition: color 0.2s;
   }
-  
+
   input {
     width: 100%;
     padding: 14px 16px 14px 44px;
-    border: 2px solid rgba($FUDMASTER-DARK, 0.1);
+    border: 2px solid rgba($CNT-DARK, 0.1);
     border-radius: 12px;
     font-size: 15px;
-    color: $FUDMASTER-DARK;
+    color: $CNT-DARK;
     background: $white;
     transition: all 0.2s ease;
-    
+
     &::placeholder {
-      color: rgba($FUDMASTER-DARK, 0.3);
+      color: rgba($CNT-DARK, 0.3);
     }
-    
+
     &:focus {
       outline: none;
-      border-color: $FUDMASTER-BLUE;
-      box-shadow: 0 0 0 4px rgba($FUDMASTER-BLUE, 0.1);
-      
-      ~ .icon {
-        color: $FUDMASTER-BLUE;
+      border-color: $CNT-BLUE;
+      box-shadow: 0 0 0 4px rgba($CNT-BLUE, 0.1);
+
+      ~.icon {
+        color: $CNT-BLUE;
       }
     }
   }
@@ -244,7 +250,7 @@ $alert-success: #10b981;
 .submit-btn {
   width: 100%;
   padding: 16px;
-  background: $FUDMASTER-DARK;
+  background: $CNT-DARK;
   color: $white;
   border: none;
   border-radius: 12px;
@@ -256,13 +262,13 @@ $alert-success: #10b981;
   justify-content: center;
   gap: 10px;
   transition: all 0.2s;
-  
+
   &:hover:not(:disabled) {
-    background: lighten($FUDMASTER-DARK, 5%);
+    background: lighten($CNT-DARK, 5%);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba($FUDMASTER-DARK, 0.2);
+    box-shadow: 0 4px 12px rgba($CNT-DARK, 0.2);
   }
-  
+
   &:disabled {
     opacity: 0.7;
     cursor: not-allowed;
@@ -270,40 +276,40 @@ $alert-success: #10b981;
 
   &.outline {
     background: transparent;
-    color: $FUDMASTER-DARK;
-    border: 2px solid rgba($FUDMASTER-DARK, 0.1);
-    
+    color: $CNT-DARK;
+    border: 2px solid rgba($CNT-DARK, 0.1);
+
     &:hover {
-      border-color: $FUDMASTER-DARK;
+      border-color: $CNT-DARK;
       background: transparent;
     }
   }
 }
 
 .card-footer {
-  background: rgba($FUDMASTER-DARK, 0.02);
+  background: rgba($CNT-DARK, 0.02);
   padding: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  border-top: 1px solid rgba($FUDMASTER-DARK, 0.05);
+  border-top: 1px solid rgba($CNT-DARK, 0.05);
 }
 
 .hint {
   font-size: 13px;
-  color: rgba($FUDMASTER-DARK, 0.5);
+  color: rgba($CNT-DARK, 0.5);
 }
 
 .link-btn {
   background: none;
   border: none;
-  color: $FUDMASTER-BLUE;
+  color: $CNT-BLUE;
   font-weight: 700;
   font-size: 15px;
   cursor: pointer;
   padding: 0;
-  
+
   &:hover {
     text-decoration: underline;
   }
@@ -311,12 +317,19 @@ $alert-success: #10b981;
 
 .copyright {
   font-size: 12px;
-  color: rgba($FUDMASTER-DARK, 0.4);
+  color: rgba($CNT-DARK, 0.4);
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (min-width: 640px) {

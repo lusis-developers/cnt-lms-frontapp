@@ -1,35 +1,34 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import thumbnailSrc from '@/assets/statis/nicole-landing/nicole-vsl.jpeg'
+// import thumbnailSrc from '@/assets/statis/nicole-landing/nicole-vsl.jpeg'
 
-const router = useRouter()
-function goToCheckout() { router.push('/checkout') }
+// const router = useRouter()
+// function goToCheckout() { router.push('/checkout') }
 
-const isVideoLoaded = ref(false)
 
-function loadVideo() {
-  if (isVideoLoaded.value) return
-  isVideoLoaded.value = true
-
-  // Cargar scripts de Wistia dinámicamente solo al interactuar
-  if (!document.getElementById('wistia-player-js')) {
-    const script1 = document.createElement('script')
-    script1.src = "https://fast.wistia.com/player.js"
-    script1.async = true
-    script1.id = 'wistia-player-js'
-    document.head.appendChild(script1)
-  }
-
-  if (!document.getElementById('wistia-embed-js')) {
-    const script2 = document.createElement('script')
-    script2.src = "https://fast.wistia.com/embed/2f09oyiyxq.js"
-    script2.async = true
-    script2.type = "module"
-    script2.id = 'wistia-embed-js'
-    document.head.appendChild(script2)
-  }
-}
+// const isVideoLoaded = ref(false)
+// 
+// function loadVideo() {
+//   if (isVideoLoaded.value) return
+//   isVideoLoaded.value = true
+// 
+//   // Cargar scripts de Wistia dinámicamente solo al interactuar
+//   if (!document.getElementById('wistia-player-js')) {
+//     const script1 = document.createElement('script')
+//     script1.src = "https://fast.wistia.com/player.js"
+//     script1.async = true
+//     script1.id = 'wistia-player-js'
+//     document.head.appendChild(script1)
+//   }
+// 
+//   if (!document.getElementById('wistia-embed-js')) {
+//     const script2 = document.createElement('script')
+//     script2.src = "https://fast.wistia.com/embed/2f09oyiyxq.js"
+//     script2.async = true
+//     script2.type = "module"
+//     script2.id = 'wistia-embed-js'
+//     document.head.appendChild(script2)
+//   }
+// }
 </script>
 
 <template>
@@ -39,41 +38,32 @@ function loadVideo() {
       <div class="vsl-split-layout">
         
         <div class="vsl-video-column">
-          <div class="video-frame" @click="loadVideo">
-            <div v-if="!isVideoLoaded" class="video-facade">
-              <img 
-                :src="thumbnailSrc"
-                alt="Video Thumbnail" 
-                class="video-thumbnail"
-                fetchpriority="high"
-                width="960"
-                height="540"
-              >
-              <div class="play-button">
-                <i class="fa-solid fa-play"></i>
+          <div class="video-frame">
+            <div class="video-facade">
+              <div class="demo-placeholder">
+                <i class="fa-solid fa-display"></i>
+                <span>Demo Interactiva</span>
               </div>
             </div>
-            <wistia-player v-else media-id="2f09oyiyxq" aspect="1.7777777777777777"></wistia-player>
           </div>
         </div>
 
         <div class="vsl-content-column">
           <h1 class="vsl-title">
-            ¡El regalo <br>
-            que necesitas <br>
-            para transformar <br>
-            tu vida!
+            Potencia el <br>
+            Aprendizaje <br>
+            en CNT <br>
           </h1>
           
           <p class="vsl-description">
-            Descubre los secretos gastronómicos empresariales de Nicole y su equipo.
+            Una herramienta diseñada para centralizar conocimientos y medir el progreso de tus colaboradores.
           </p>
 
           <div class="cta-wrapper">
-            <button class="cta-button" @click="goToCheckout">
-              🔓 Desbloquea tu descuento 🗝️
+            <button class="cta-button" @click="() => { }">
+              Explorar Demo Interactiva
             </button>
-            <p class="cta-subtitle">Solo para los primeros 50 - Quedan 28 cupos</p>
+            <p class="cta-subtitle">Plataforma exclusiva para capacitación interna</p>
           </div>
         </div>
 
@@ -91,7 +81,7 @@ function loadVideo() {
 
 .vsl {
   &-hero {
-    background-color: $FUDMASTER-PRIMARY;
+    background-color: $CNT-DARK;
     // min-height: 100vh; /* Ocupa toda la pantalla */
     display: flex;
     align-items: center;
@@ -118,72 +108,47 @@ function loadVideo() {
   }
 
 
-  .video-facade {
-    position: relative;
+  .demo-placeholder {
     width: 100%;
     height: 100%;
+    background: linear-gradient(135deg, rgba($CNT-BLUE, 0.2) 0%, rgba($CNT-DARK, 0.5) 100%);
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-  }
+    color: $CNT-LIGHT;
+    gap: 16px;
+    border-radius: 12px;
+    border: 2px dashed rgba($CNT-LIGHT, 0.2);
 
-  .video-thumbnail {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    /* Evita que se estire */
-    filter: blur(3px);
-    /* Efecto borroso solicitado */
-    transform: scale(1.02);
-    /* Escalar un poco para evitar bordes blancos por el blur */
-  }
+    i {
+      font-size: 64px;
+      opacity: 0.8;
+    }
 
-  .play-button {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 80px;
-    height: 80px;
-    background-color: rgba(233, 30, 99, 0.9);
-    /* $FUDMASTER-PINK aprox */
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 32px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-    transition: transform 0.2s ease, background-color 0.2s;
-    pointer-events: none;
-    /* Dejar pasar el clic al contenedor */
-  }
-
-  .video-frame:hover .play-button {
-    transform: scale(1.1);
-    background-color: rgb(233, 30, 99);
+    span {
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
   }
 
   /* --- COLUMNA TEXTO --- */
   &-content-column {
     flex: 0.8;
-    /* El texto ocupa un poco menos (40% aprox) */
-    color: $FUDMASTER-LIGHT;
-    text-align: right;
-    /* Alineado a la derecha como en la referencia */
+    color: $CNT-LIGHT;
+    text-align: left;
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
-    /* Fuerza los elementos a la derecha */
+    align-items: flex-start;
   }
 
   &-title {
-    font-size: 2.5rem;
-    /* Tamaño grande */
+    font-size: 3.5rem;
     font-weight: 800;
     line-height: 1.1;
     margin-bottom: 25px;
-    color: $FUDMASTER-LIGHT;
+    color: $CNT-LIGHT;
   }
 
   &-description {
@@ -191,22 +156,20 @@ function loadVideo() {
     line-height: 1.5;
     margin-bottom: 40px;
     opacity: 0.9;
-    max-width: 400px;
-    /* Evita que el texto sea muy ancho */
+    max-width: 500px;
   }
 
   .cta-wrapper {
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
-    /* Alinea botón y subtitulo a la derecha */
+    align-items: flex-start;
   }
 }
 
 /* --- BOTÓN --- */
 .cta-button {
-  background: $FUDMASTER-ORANGE;
-  color: $FUDMASTER-LIGHT;
+  background: $CNT-BLUE;
+  color: $CNT-LIGHT;
   border: none;
   padding: 18px 40px;
   font-size: 1.1rem;
@@ -214,7 +177,7 @@ function loadVideo() {
   border-radius: 50px;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 4px 15px rgba(233, 30, 99, 0.4);
+  box-shadow: 0 4px 15px rgba($CNT-BLUE, 0.4);
   white-space: nowrap;
 
   @media screen and (max-width: 320px) {
@@ -224,7 +187,7 @@ function loadVideo() {
 
   &:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(233, 30, 99, 0.6);
+    box-shadow: 0 8px 25px rgba($CNT-BLUE, 0.6);
     // filter: brightness(1.1); // Opcional para brillo
   }
 
@@ -244,13 +207,11 @@ function loadVideo() {
 @media (max-width: 960px) {
   .vsl-split-layout {
     flex-direction: column;
-    /* Apila Video arriba, Texto abajo */
     gap: 40px;
   }
 
   .vsl-content-column {
     text-align: center;
-    /* Centrar texto en móvil */
     align-items: center;
     padding: 0 10px;
   }

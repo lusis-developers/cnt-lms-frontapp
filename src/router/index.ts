@@ -26,10 +26,10 @@ import CareerDetail from "../views/CareerDetail.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: '/',
+    path: '/hub',
     component: UserLayout,
     meta: {
-      title: 'Fudmaster | lleva tu cocina al siguiente nivel',
+      title: 'Plataforma de Capacitación | CNT',
       requiresAuth: true
     },
     children: [
@@ -111,10 +111,10 @@ const routes: Array<RouteRecordRaw> = [
     }
   },
   {
-    path: '/landing-page',
+    path: '/',
     component: NicoleLanding,
     meta: {
-      title: 'Cambia tu vida gastronómica con Nicole y su equipo'
+      title: 'Plataforma de Capacitación | Demo CNT'
     }
   },
   {
@@ -189,11 +189,15 @@ router.beforeEach((to, _from, next) => {
   const requiresAuth = to.matched.some((record) => record.meta?.requiresAuth)
 
   if (requiresAuth && !hasToken) {
-    return next({ path: '/landing-page', replace: true })
+    return next({ path: '/', replace: true })
   }
 
   if (to.path === '/login' && hasToken) {
-    return next({ path: '/', replace: true })
+    return next({ path: '/hub', replace: true })
+  }
+
+  if (to.path === '/' && hasToken) {
+    return next({ path: '/hub', replace: true })
   }
 
   next()

@@ -1,33 +1,28 @@
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
-const router = useRouter()
-function goToCheckout() { router.push('/checkout') }
+// import { useRouter } from 'vue-router'
+// const router = useRouter()
+// function goToCheckout() { router.push('/checkout') }
 const problems = [
   {
-    icon: '💣',
+    icon: '📊',
     description:
-      'Tienes robo hormiga: Sabes que te roban, pero no sabes dónde ni cuánto.',
+      'Falta de medición: No sabes quién está aprendiendo realmente y quién no.',
   },
   {
-    icon: '☠️',
+    icon: '🏢',
     description:
-      'Eres esclavo Operativo: Si tú no abres el local, nada funciona bien. No has tenido vacaciones en 2 años.',
+      'Desorden organizacional: El conocimiento está disperso y no es accesible para todos.',
   },
   {
-    icon: '🙈',
+    icon: '📉',
     description:
-      'Usas Marketing Ciego: Pagas el botón "Promocionar" en Instagram pero no sabes si eso trajo clientes reales.',
+      'Baja retención: Los colaboradores pierden interés en capacitaciones tradicionales y aburridas.',
   },
   {
-    icon: '💸',
+    icon: '💡',
     description:
-      'Tienes Ventas Estancadas: Tienes buen producto, pero no tienes clientes o pedidos suficientes.',
-  },
-  {
-    icon: '😵‍💫',
-    description:
-      'Te sientes ahogado en deudas: Tienes buenas ventas, pero sientes que no es suficiente.',
-  },
+      'Escalabilidad limitada: Entrenar a nuevos equipos toma demasiado tiempo y recursos.',
+  }
 ]
 </script>
 
@@ -49,10 +44,9 @@ const problems = [
         <button class="cta" type="button" @click="goToCheckout">Resolverlo ahora</button>
       </div> -->
       <div class="cta-wrapper">
-        <button class="cta-button" @click="goToCheckout">
-          🎁 Reclama tus <span>$693</span> de descuento aqui 🎁
+        <button class="cta-button" @click="() => { }">
+          Ver soluciones corporativas
         </button>
-        <!-- <p class="cta-subtitle">Solo para los primeros 50 - Quedan 28 cupos</p> -->
       </div>
     </section>
   </div>
@@ -65,8 +59,8 @@ const problems = [
   display: flex;
   justify-content: center;
   padding: 3rem 1rem;
-  background-color: $FUDMASTER-DARK;
-  color: $FUDMASTER-LIGHT;
+  background-color: $CNT-DARK;
+  color: $CNT-LIGHT;
 
   .problem-section {
     max-width: 800px;
@@ -94,11 +88,13 @@ const problems = [
         line-height: 1.4;
       }
     }
+
     .actions {
       margin-top: 2rem;
       display: flex;
       justify-content: center;
     }
+
     .cta {
       background: $FUDMASTER-GREEN;
       color: $white;
@@ -108,16 +104,19 @@ const problems = [
       font-weight: 700;
       cursor: pointer;
     }
+
     .cta-wrapper {
       display: flex;
       flex-direction: column;
-      align-items: flex-center; /* Alinea botón y subtitulo a la derecha */
+      align-items: flex-center;
+      /* Alinea botón y subtitulo a la derecha */
       margin-top: 12px;
     }
+
     /* --- BOTÓN --- */
     .cta-button {
-      background: $FUDMASTER-PURPLE;
-      color: $FUDMASTER-LIGHT;
+      background: $CNT-BLUE;
+      color: $CNT-LIGHT;
       border: none;
       padding: 18px 24px;
       font-size: 1.1rem;
@@ -125,15 +124,8 @@ const problems = [
       border-radius: 50px;
       cursor: pointer;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
-      box-shadow: 0 4px 15px rgba(233, 30, 99, 0.4);
+      box-shadow: 0 4px 15px rgba($CNT-BLUE, 0.4);
       white-space: nowrap;
-
-      span {
-        color: $FUDMASTER-DARK;
-        font-weight: 600;
-        font-size: 1rem;
-        margin: 0;
-      }
 
       @media screen and (max-width: 320px) {
         padding: 14px 16px;
@@ -142,7 +134,7 @@ const problems = [
 
       &:hover {
         transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(233, 30, 99, 0.6);
+        box-shadow: 0 8px 25px rgba($CNT-BLUE, 0.6);
         // filter: brightness(1.1); // Opcional para brillo
       }
 
