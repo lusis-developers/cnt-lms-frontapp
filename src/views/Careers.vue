@@ -9,7 +9,6 @@ import CareerCard from '@/components/CareerCard.vue'
 
 const store = useCareersStore()
 const userStore = useUserStore()
-const coursesStore = useCoursesStore()
 const router = useRouter()
 
 const modalOpen = ref(false)
@@ -46,44 +45,12 @@ const error = computed(() => store.error)
 const mockCareers = computed(() => makeCareerPlaceholders(4))
 const upcomingCareers = computed(() => mockCareers.value)
 
-const userCareerIds = computed(() => {
-  const list = Array.isArray(store.userCareers) ? store.userCareers : []
-  const base = list.map((c: any) => String(c?.info?._id || c?.access?.careerId || ''))
-  return new Set(base)
-})
 
 const myCareers = computed(() => {
   const list = Array.isArray(store.userCareers) ? store.userCareers : []
   return list.map((c: any) => c?.info || c?.access).filter(Boolean)
 })
 
-function sanitizeUrl(url?: string) {
-  return (url || '').toString().replace(/`/g, '').trim()
-}
-
-function coverOf(career: any) {
-  return sanitizeUrl(career?.imageUrl) || '/src/assets/fudmaster-color.png'
-}
-
-
-function coursesCount(career: any) {
-  const ids = Array.isArray(career?.courseIds) ? career.courseIds : []
-  return ids.length
-}
-
-function isInMyCareers(career: any) {
-  return userCareerIds.value.has(String(career?._id))
-}
-
-async function addToMyCareers(career: any) {
-  const uid = userStore.id || localStorage.getItem('user_id')
-  if (!uid || !career?._id) return
-  const res = await store.assignToUser(String(career._id), String(uid), { autoEnroll: true, teachableUserId: userStore.teachableUserId || undefined })
-  if (res) {
-    await store.fetchUserCareers(String(uid))
-    await coursesStore.fetchEnrolled(String(uid))
-  }
-}
 </script>
 
 <template>
@@ -316,74 +283,6 @@ async function addToMyCareers(career: any) {
   }
 }
 
-.card {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 14px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
-  display: grid;
-  gap: 8px;
-}
-
-.cover {
-  width: 100%;
-  height: 130px;
-  border-radius: 8px;
-  object-fit: cover;
-}
-
-.cover.blur {
-  filter: blur(6px);
-}
-
-.name {
-  color: var(--text);
-  font-weight: 700;
-  margin: 0;
-}
-
-.desc {
-  color: color-mix(in oklab, var(--text), transparent 30%);
-  margin: 0;
-  font-size: 14px;
-}
-
-.meta {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 6px;
-}
-
-.badge {
-  background: color-mix(in oklab, var(--accent), transparent 85%);
-  color: var(--text);
-  border-radius: 6px;
-  padding: 6px 8px;
-  font-size: 12px;
-}
-
-.badge.active {
-  background: color-mix(in oklab, var(--accent), transparent 70%);
-  font-weight: 700;
-}
-
-.add-button {
-  background: var(--accent);
-  color: $white;
-  border: none;
-  border-radius: 8px;
-  padding: 6px 8px;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.add-button[disabled] {
-  background: color-mix(in oklab, var(--accent), transparent 40%);
-  cursor: default;
-}
 
 .empty {
   color: color-mix(in oklab, var(--text), transparent 40%);

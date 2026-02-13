@@ -80,7 +80,7 @@ async function handleSubmit() {
       heardAboutUsOther: heardAboutUs.value === 'other' ? heardAboutUsOther.value : undefined,
     };
 
-    const { data } = await usersService.submitOnboarding(userStore.id, payload);
+    await usersService.submitOnboarding(userStore.id, payload);
 
     // Update store
     userStore.setUser({
